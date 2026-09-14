@@ -1,16 +1,23 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import concepts from '../data/concepts.json';
 interface Props { frontmatter: { title: string; description: string; category: string; difficulty: string } }
 const { frontmatter } = Astro.props;
+const id = Astro.url.pathname.split('/').filter(Boolean).at(-1);
+const concept = concepts.find(c => c.id === id);
+const before = concepts.filter(c => concept?.prerequisites.includes(c.id));
+const after = concepts.filter(c => c.prerequisites.includes(id ?? ''));
 ---
 <BaseLayout title={`${frontmatter.title} — Tensorium`} description={frontmatter.description}>
   <article class="concept-page">
-    <a class="back-link" href="/#concepts">← All concepts</a>
+    <a class="back-link" href={`/?concept=${id}#concepts`}>← Back to the map</a>
     <header class="concept-heading">
       <p class="eyebrow">{frontmatter.category} <span aria-hidden="true">/</span> {frontmatter.difficulty}</p>
       <h1>{frontmatter.title}</h1>
       <p class="lede">{frontmatter.description}</p>
     </header>
+    <section class="lesson-connections" aria-label="Suggested prerequisites"><p class="eyebrow">Before this</p>{before.length ? <ul>{before.map(c => <li><a href={`/concepts/${c.id}/`}>{c.title} ↗</a></li>)}</ul> : <p>No earlier lesson needed. Start here.</p>}</section>
     <div class="prose"><slot /></div>
+    <section class="lesson-connections next-lessons" aria-label="Next concepts"><p class="eyebrow">Explore next</p>{after.length ? <ul>{after.map(c => <li><a href={`/concepts/${c.id}/`}>{c.title} ↗</a></li>)}</ul> : <p>This is the end of this branch for now. <a href={`/?concept=${id}#concepts`}>Explore the atlas ↗</a></p>}</section>
   </article>
 </BaseLayout>

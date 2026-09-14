@@ -7,6 +7,14 @@
 - [x] Gradient descent introduction with a static diagram.
 - [x] Shared minimal visual language and contribution instructions.
 
+## Learning navigation — implemented
+
+- [x] 22 introductory lessons across foundational and applied subject groups.
+- [x] Prerequisite graph with multiple parents, entry points, and derived next steps.
+- [x] Map / List views, URL selection, and mobile vertical progression.
+- [x] Worked examples and native expandable self-checks for generated lessons.
+- [x] Validation of prerequisite references and cycles.
+
 ## Next — prove one learning experience
 
 - [ ] Add a gradient descent experiment: learning rate, starting point, step, play/pause, reset, and current loss.
@@ -18,9 +26,9 @@
 
 ## Then — a connected introduction
 
-- [ ] Linear regression: predictions, residuals, and loss.
+- [x] Linear regression introduction: predictions, residuals, and loss.
 - [ ] Backpropagation: how gradients flow through a small network.
-- [ ] Add prerequisites and related-concept links once multiple pages exist.
+- [x] Add prerequisites and related-concept links.
 - [ ] Add equation rendering if notation outgrows plain text.
 
 ## Later — guided by actual use

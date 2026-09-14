@@ -1,0 +1,310 @@
+[
+  {
+    "id": "vectors",
+    "title": "Vectors",
+    "category": "Linear algebra",
+    "prerequisites": [],
+    "description": "Describe an observation with an ordered list of numbers.",
+    "intuition": "A vector groups quantities that belong together. A point on a map can be represented by two coordinates; a house can be represented by its area and number of rooms.",
+    "example": "[80, 3] might describe an 80-square-metre home with 3 rooms. Adding [10, 1] gives [90, 4]. Each position keeps the same meaning.",
+    "takeaway": "Order and units matter. Swapping the entries changes what the vector describes.",
+    "question": "What is [2, 5] + [3, 1]?",
+    "answer": "[5, 6]: add corresponding entries."
+  },
+  {
+    "id": "dot-product",
+    "title": "Dot product",
+    "category": "Linear algebra",
+    "prerequisites": [
+      "vectors"
+    ],
+    "description": "Combine inputs and weights into a single score.",
+    "intuition": "Multiply matching entries of two vectors, then add the products. This is a weighted sum: each weight controls how strongly an input contributes.",
+    "example": "[2, 3] · [4, 1] = 2 × 4 + 3 × 1 = 11. The first input contributes 8, the second contributes 3.",
+    "takeaway": "A dot product produces a scalar. As a similarity measure, its size also depends on vector lengths.",
+    "question": "What happens if both weights are zero?",
+    "answer": "The score is zero, regardless of the inputs."
+  },
+  {
+    "id": "matrices",
+    "title": "Matrices",
+    "category": "Linear algebra",
+    "prerequisites": [
+      "dot-product"
+    ],
+    "description": "Apply several weighted sums at once.",
+    "intuition": "A matrix is a rectangular table of numbers. Multiplying a matrix by a vector computes one dot product per row, producing a new vector.",
+    "example": "Rows [1, 0] and [0, 2] applied to [3, 4] produce [3, 8]. The first coordinate stays the same; the second doubles.",
+    "takeaway": "For matrix–vector multiplication, each row must have as many entries as the input vector.",
+    "question": "What does a matrix with rows [1, 0] and [0, 1] do?",
+    "answer": "It leaves the vector unchanged: this is the identity matrix."
+  },
+  {
+    "id": "functions",
+    "title": "Functions",
+    "category": "Calculus",
+    "prerequisites": [],
+    "description": "Connect an input to an output through a rule.",
+    "intuition": "A function assigns one output to each allowed input. A model is a function whose adjustable parameters determine its predictions.",
+    "example": "For f(x) = 2x + 1, input 3 produces output 7. Changing the coefficient 2 changes the rule, rather than just the input.",
+    "takeaway": "Inputs and parameters play different roles: inputs describe an observation; parameters define the model.",
+    "question": "What is f(0) for f(x) = 2x + 1?",
+    "answer": "1. The constant term remains when x is zero."
+  },
+  {
+    "id": "derivatives",
+    "title": "Derivatives",
+    "category": "Calculus",
+    "prerequisites": [
+      "functions"
+    ],
+    "description": "Measure how an output changes near an input.",
+    "intuition": "A derivative describes local sensitivity. It tells you approximately how much the output changes for a small change in the input.",
+    "example": "For f(x) = x², the derivative is 2x. At x = 3, a small input increase of 0.01 gives an approximate output increase of 6 × 0.01 = 0.06.",
+    "takeaway": "A derivative is local. A large step may behave differently from the local approximation.",
+    "question": "Where is the derivative of x² zero?",
+    "answer": "At x = 0, the bottom of this particular bowl."
+  },
+  {
+    "id": "probability",
+    "title": "Probability",
+    "category": "Probability & statistics",
+    "prerequisites": [],
+    "description": "Express uncertainty with numbers between zero and one.",
+    "intuition": "Probability describes how likely an event is under a model of uncertainty. Mutually exclusive outcomes that cover every possibility have probabilities adding to one.",
+    "example": "A fair six-sided die has probability 1/6 for each face. Rolling an even number has probability 3/6 = 1/2.",
+    "takeaway": "A probability model relies on assumptions. A real die need not be fair.",
+    "question": "What is the probability of not rolling a six on a fair die?",
+    "answer": "5/6, because the five other outcomes are equally likely."
+  },
+  {
+    "id": "distributions",
+    "title": "Distributions",
+    "category": "Probability & statistics",
+    "prerequisites": [
+      "probability"
+    ],
+    "description": "Describe how probability is spread across outcomes.",
+    "intuition": "A distribution specifies the probabilities of possible values. It describes the whole pattern of uncertainty, rather than a single event.",
+    "example": "A Bernoulli distribution models an outcome that is 1 with probability p and 0 with probability 1 − p. At p = 0.7, its expected value is 0.7.",
+    "takeaway": "The expected value is a probability-weighted average; it need not be a possible individual outcome.",
+    "question": "Can one Bernoulli trial return 0.7?",
+    "answer": "No. A trial returns 0 or 1; 0.7 can be its expected value."
+  },
+  {
+    "id": "loss",
+    "title": "Loss functions",
+    "category": "Optimization",
+    "prerequisites": [
+      "functions"
+    ],
+    "description": "Turn prediction errors into a quantity to minimize.",
+    "intuition": "A loss function measures how undesirable a prediction is. Training adjusts model parameters to reduce an aggregate of these losses.",
+    "example": "If a prediction is 5 and the target is 3, squared error is (5 − 3)² = 4. Errors of 2 and −2 receive the same squared loss.",
+    "takeaway": "The choice of loss defines what training rewards. Low training loss alone does not establish useful predictions on new data.",
+    "question": "What is squared error for a prediction of 1 and target of 4?",
+    "answer": "9, because (1 − 4)² = 9."
+  },
+  {
+    "id": "gradient-descent",
+    "title": "Gradient descent",
+    "category": "Optimization",
+    "prerequisites": [
+      "derivatives",
+      "loss"
+    ],
+    "description": "Find a minimum by taking small steps downhill.",
+    "intuition": "Follow the negative gradient to decrease a loss locally.",
+    "example": "For x², update x by subtracting learning_rate × 2x.",
+    "takeaway": "The learning rate matters.",
+    "question": "Does every downhill path reach a global minimum?",
+    "answer": "No. The landscape and update choices matter."
+  },
+  {
+    "id": "linear-regression",
+    "title": "Linear regression",
+    "category": "Supervised learning",
+    "prerequisites": [
+      "dot-product",
+      "loss"
+    ],
+    "description": "Predict a numerical target with a weighted sum.",
+    "intuition": "Linear regression fits weights and an intercept to predict a number from input features. Fitting by least squares minimizes the sum of squared residuals.",
+    "example": "A toy rule price = 2 × area + 10 predicts 170 for area 80. If the observed target is 180, the residual target − prediction is 10.",
+    "takeaway": "A fitted relationship does not demonstrate causation. Predictions far outside the training range can be unreliable.",
+    "question": "What does the intercept predict when every feature is zero?",
+    "answer": "The intercept itself, though zero may not be a meaningful real-world input."
+  },
+  {
+    "id": "neurons",
+    "title": "Artificial neurons",
+    "category": "Neural networks",
+    "prerequisites": [
+      "dot-product",
+      "functions"
+    ],
+    "description": "Follow a weighted sum through an activation function.",
+    "intuition": "An artificial neuron computes a weighted sum plus a bias, then applies an activation. Nonlinear activations let layered networks represent more than a single linear transformation.",
+    "example": "Inputs [2, 3], weights [1, −1], and bias 2 produce a score of 1. ReLU returns max(0, 1) = 1.",
+    "takeaway": "This is a mathematical building block, not a detailed model of a biological neuron.",
+    "question": "What does ReLU return for a score of −3?",
+    "answer": "0. ReLU clips negative scores to zero."
+  },
+  {
+    "id": "convolution",
+    "title": "Convolution",
+    "category": "Vision",
+    "prerequisites": [
+      "matrices"
+    ],
+    "description": "Reuse a small filter across a larger input.",
+    "intuition": "A filter moves across an input, combining a small neighborhood at each position. Sharing the same weights lets it detect a pattern in different locations.",
+    "example": "For input [1, 2, 4] and a two-entry filter [1, −1], sliding without flipping gives [−1, −2]. This cross-correlation convention is commonly called convolution in neural networks.",
+    "takeaway": "Filter size, padding, and stride determine the output shape. A filter detects local patterns; it does not understand an image by itself.",
+    "question": "How many positions fit a width-2 filter into a width-4 input with stride 1 and no padding?",
+    "answer": "3 positions."
+  },
+  {
+    "id": "sequences",
+    "title": "Sequences",
+    "category": "Sequence models",
+    "prerequisites": [
+      "vectors"
+    ],
+    "description": "Represent data whose order carries information.",
+    "intuition": "A sequence is an ordered series of observations. A sequence model must account for relationships across positions, rather than treating every observation in isolation.",
+    "example": "The sequences [1, 2, 3] and [3, 2, 1] contain the same values but describe opposite trends. Word order similarly changes meaning.",
+    "takeaway": "Representing a sequence and modeling its dependencies are different tasks.",
+    "question": "Why might shuffling a time series change its meaning?",
+    "answer": "It destroys the original temporal order and the relationships tied to that order."
+  },
+  {
+    "id": "attention",
+    "title": "Attention",
+    "category": "Sequence models",
+    "prerequisites": [
+      "dot-product",
+      "sequences"
+    ],
+    "description": "Build an output by weighting information from other positions.",
+    "intuition": "Attention compares a query with keys to assign scores, converts those scores to weights, and combines the corresponding values. This allows different inputs to draw on different context.",
+    "example": "If two values are 10 and 20 and their attention weights are 0.25 and 0.75, the weighted output is 17.5.",
+    "takeaway": "Attention weights describe a computation; they are not automatically a reliable explanation of a model’s decision.",
+    "question": "What output do equal weights give for values 10 and 20?",
+    "answer": "15, their average."
+  },
+  {
+    "id": "clustering",
+    "title": "Clustering",
+    "category": "Unsupervised learning",
+    "prerequisites": [
+      "vectors"
+    ],
+    "description": "Group observations using a notion of similarity.",
+    "intuition": "Clustering finds groups without supplied target labels. A method such as k-means alternates between assigning points to nearby centers and updating those centers.",
+    "example": "Points [1, 1] and [1, 2] are close under Euclidean distance; [9, 9] is far away. A two-cluster solution can separate the distant point from the pair.",
+    "takeaway": "Groups depend on the distance measure, feature scaling, and algorithm. They are not necessarily natural categories.",
+    "question": "Why can measuring one feature in millimetres instead of metres change a clustering?",
+    "answer": "Without scaling, that feature can dominate distance calculations."
+  },
+  {
+    "id": "graphs",
+    "title": "Graphs",
+    "category": "Graph learning",
+    "prerequisites": [],
+    "description": "Describe objects through their connections.",
+    "intuition": "A graph consists of nodes and edges. Nodes represent entities, while edges represent relationships. Edges can be directed, weighted, or both.",
+    "example": "In a citation graph, papers are nodes and a directed edge points from a citing paper to a cited paper. Our prerequisite atlas is also a directed graph.",
+    "takeaway": "A graph encodes chosen relationships. Missing edges do not always mean there is no real-world relationship.",
+    "question": "Does a connection from A to B necessarily imply a connection from B to A?",
+    "answer": "Only in an undirected graph. Directed edges can represent one-way relationships."
+  },
+  {
+    "id": "reinforcement-learning",
+    "title": "Agents & rewards",
+    "category": "Reinforcement learning",
+    "prerequisites": [
+      "probability"
+    ],
+    "description": "Learn actions through interaction and feedback.",
+    "intuition": "An agent selects an action, observes what happens, and receives a reward. A policy specifies how the agent chooses actions. The objective usually concerns rewards over time.",
+    "example": "A maze agent may receive −1 per step and +10 for reaching an exit. A shorter successful route earns a larger total reward under this rule.",
+    "takeaway": "Reward design matters. Maximizing a poorly chosen reward may produce unintended behavior.",
+    "question": "Why might the best action have no immediate reward?",
+    "answer": "It can lead to a state with better future rewards."
+  },
+  {
+    "id": "evaluation",
+    "title": "Train & test",
+    "category": "Evaluation",
+    "prerequisites": [
+      "loss",
+      "probability"
+    ],
+    "description": "Measure performance on data excluded from fitting.",
+    "intuition": "Training data fits parameters. Validation data guides choices. A held-out test set estimates performance after those choices are fixed.",
+    "example": "If you repeatedly choose models based on test scores, the test set is influencing development. It is no longer an untouched final check.",
+    "takeaway": "Splits must reflect deployment and avoid leakage. Time-dependent data often needs chronological splits.",
+    "question": "Should preprocessing statistics be fitted on all data before splitting?",
+    "answer": "No. Fit them on training data, then apply the same transformation to validation and test data."
+  },
+  {
+    "id": "regularization",
+    "title": "Regularization",
+    "category": "Generalization",
+    "prerequisites": [
+      "linear-regression",
+      "evaluation"
+    ],
+    "description": "Encourage models to fit patterns that carry beyond training data.",
+    "intuition": "Regularization constrains or penalizes a model to discourage excessive sensitivity to training examples. Its strength is a modeling choice, usually selected using validation data.",
+    "example": "Ridge regression adds a penalty proportional to the sum of squared weights to the fitting objective. Increasing its strength encourages smaller weights.",
+    "takeaway": "More regularization is not always better. Too much can prevent a model from fitting useful structure.",
+    "question": "Which data should guide the choice of penalty strength?",
+    "answer": "Validation data, keeping the final test set reserved for evaluation."
+  },
+  {
+    "id": "deployment",
+    "title": "Inference & deployment",
+    "category": "Deployment",
+    "prerequisites": [
+      "evaluation"
+    ],
+    "description": "Use a trained model to make predictions in a real setting.",
+    "intuition": "Inference applies a trained model to new inputs. Deployment makes that computation available in a product or process, together with the preprocessing it expects.",
+    "example": "A model trained on standardized inputs must receive inputs transformed with the saved training statistics. Sending raw values changes what its weights mean.",
+    "takeaway": "Accuracy is only part of deployment. Input compatibility, latency, and changes in real-world data also matter.",
+    "question": "Should training-time feature order be preserved during inference?",
+    "answer": "Yes. Swapping features sends values to the wrong learned weights."
+  },
+  {
+    "id": "autoencoders",
+    "title": "Autoencoders",
+    "category": "Architectural patterns",
+    "prerequisites": [
+      "neurons",
+      "loss"
+    ],
+    "description": "Learn a representation by reconstructing an input.",
+    "intuition": "An encoder maps an input to a representation. A decoder tries to reconstruct the original input from that representation. Training reduces reconstruction loss.",
+    "example": "A network might encode ten input measurements into three numbers, then reconstruct the ten measurements from those three. The bottleneck encourages it to retain information useful for reconstruction.",
+    "takeaway": "A bottleneck does not guarantee a useful representation. Reconstruction quality and usefulness for another task are different objectives.",
+    "question": "Where do the reconstruction targets come from?",
+    "answer": "From the inputs themselves; no separate human-provided target labels are needed."
+  },
+  {
+    "id": "feature-effects",
+    "title": "Feature effects",
+    "category": "Interpretability",
+    "prerequisites": [
+      "functions",
+      "evaluation"
+    ],
+    "description": "Inspect how a prediction responds to a changing input.",
+    "intuition": "One way to inspect a model is to change an input feature while holding other features fixed, then compare predictions. This exposes how the model behaves for those chosen inputs.",
+    "example": "For a model f(area, rooms) = 2 × area + 5 × rooms, increasing area by 10 while holding rooms fixed raises the prediction by 20.",
+    "takeaway": "A model response is not a causal effect in the real world. Changing correlated features independently may also create unrealistic inputs.",
+    "question": "Does a larger prediction after changing a feature prove that the feature causes the real outcome?",
+    "answer": "No. It reveals a relationship inside the model, not a demonstrated causal relationship."
+  }
+]

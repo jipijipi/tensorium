@@ -1,23 +1,74 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-const concepts = Object.values(import.meta.glob('./concepts/*.mdx', { eager: true })) as { url: string; frontmatter: { title: string; description: string; category: string } }[];
+import concepts from '../data/concepts.json';
+const categories = [...new Set(concepts.map(c => c.category))];
 ---
 <BaseLayout>
-  <section class="hero">
+  <section class="hero atlas-hero">
     <p class="eyebrow">A visual atlas of machine learning</p>
-    <h1>Complex ideas.<br /><span class="muted">Clearly understood.</span></h1>
-    <p class="lede">Build intuition for machine learning.<br class="desktop-break" /> One concept, one explanation, one experiment at a time.</p>
-    <a class="text-link" href="#concepts">Explore the atlas <span aria-hidden="true">↓</span></a>
+    <h1>Start simple.<br /><span class="muted">See how ideas connect.</span></h1>
+    <p class="lede">Explore the foundations, follow a branch, and build your understanding one concept at a time.</p>
   </section>
-  <section id="concepts" class="atlas" aria-labelledby="atlas-title">
-    <div class="section-heading"><h2 id="atlas-title">The atlas</h2><span class="eyebrow">{String(concepts.length).padStart(2, '0')} concept · Early edition</span></div>
-    <div class="concept-list">
-      {concepts.map(({ url, frontmatter }, index) => <a class="concept-row" href={url}>
-        <span class="index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-        <div><span class="eyebrow">{frontmatter.category}</span><h3>{frontmatter.title}</h3><p>{frontmatter.description}</p></div>
-        <span class="row-arrow" aria-hidden="true">↗</span>
-      </a>)}
+  <section id="concepts" aria-labelledby="atlas-title">
+    <div class="section-heading">
+      <h2 id="atlas-title">The learning atlas <span class="count">{concepts.length} introductions</span></h2>
+      <div class="view-switch" hidden aria-label="Atlas view"><button type="button" data-view="map" aria-pressed="true">Map</button><button type="button" data-view="list" aria-pressed="false">List</button></div>
     </div>
-    <p class="atlas-note">Starting with the foundations. Growing with intention.</p>
+    <div id="map-view" hidden>
+      <p class="map-help">Choose a subject. Follow the connections from prerequisites to next steps.</p>
+      <div class="explorer">
+        <aside class="subject-picker" aria-label="Subjects">
+          {categories.map(category => <div class="subject-group"><h3 class="eyebrow">{category}</h3>{concepts.filter(c => c.category === category).map(c => <button type="button" data-select={c.id} aria-pressed="false">{c.title}{c.prerequisites.length === 0 && <span class="root-label">Start</span>}</button>)}</div>)}
+        </aside>
+        <div class="map-stage">
+          {concepts.map(c => {
+            const before = concepts.filter(p => c.prerequisites.includes(p.id));
+            const after = concepts.filter(p => p.prerequisites.includes(c.id));
+            return <section class="concept-neighborhood" data-panel={c.id} hidden aria-label={`${c.title} learning path`}>
+              <div class="branch-column"><h3 class="eyebrow">01 / Before this</h3><div class="branch-nodes">{before.length ? before.map(p => <button type="button" class="branch-node" data-select={p.id}><span>{p.title}</span><span aria-hidden="true">→</span></button>) : <p class="branch-empty">Start here.<br />No earlier lesson needed.</p>}</div></div>
+              <div class="branch-column selected-column"><h3 class="eyebrow">02 / Learn this</h3><div class="selected-node"><p class="eyebrow">{c.category}</p><h2>{c.title}</h2><p>{c.description}</p><a class="lesson-link" href={`/concepts/${c.id}/`}>Read introduction <span aria-hidden="true">↗</span></a></div></div>
+              <div class="branch-column"><h3 class="eyebrow">03 / Explore next</h3><div class="branch-nodes">{after.length ? after.map(p => <button type="button" class="branch-node" data-select={p.id}><span>{p.title}</span><span aria-hidden="true">→</span></button>) : <p class="branch-empty">This branch ends here for now.<br />Explore another subject.</p>}</div></div>
+              <p class="path-caption">{before.length > 1 ? 'These foundations come together here.' : before.length ? 'Build on the earlier idea, then follow a connection.' : 'An entry point into the atlas.'} Connections show suggested preparation for each introduction.</p>
+            </section>;
+          })}
+          <p id="selection-status" class="sr-only" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div id="list-view">
+      {categories.map(category => <section class="list-category"><h3 class="eyebrow">{category}</h3>{concepts.filter(c => c.category === category).map(c => <a class="concept-row" href={`/concepts/${c.id}/`}><span class="index" aria-hidden="true">↳</span><div><h3>{c.title}</h3><p>{c.description}</p><small>{c.prerequisites.length ? `Builds on ${c.prerequisites.map(id => concepts.find(p => p.id === id)!.title).join(' + ')}` : 'Start here · No earlier lesson needed'}</small></div><span aria-hidden="true">↗</span></a>)}</section>)}
+    </div>
   </section>
 </BaseLayout>
+<script>
+  const map = document.querySelector<HTMLElement>('#map-view')!;
+  const list = document.querySelector<HTMLElement>('#list-view')!;
+  const switcher = document.querySelector<HTMLElement>('.view-switch')!;
+  const panels = [...document.querySelectorAll<HTMLElement>('[data-panel]')];
+  const selectors = [...document.querySelectorAll<HTMLButtonElement>('[data-select]')];
+  function restore() {
+    const params = new URLSearchParams(location.search);
+    const selected = panels.find(p => p.dataset.panel === params.get('concept'))?.dataset.panel ?? 'vectors';
+    const view = params.get('view') === 'list' ? 'list' : 'map';
+    panels.forEach(p => p.hidden = p.dataset.panel !== selected);
+    selectors.forEach(button => { if (button.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', String(button.dataset.select === selected)); });
+    map.hidden = view !== 'map'; list.hidden = view !== 'list';
+    document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+    document.querySelector('#selection-status')!.textContent = panels.find(p => !p.hidden)?.getAttribute('aria-label') ?? '';
+  }
+  function update(key: string, value: string) {
+    const url = new URL(location.href); url.searchParams.set(key, value);
+    history.pushState({}, '', url); restore();
+  }
+  selectors.forEach(button => button.addEventListener('click', () => {
+    const fromBranch = Boolean(button.closest('.concept-neighborhood'));
+    update('concept', button.dataset.select!);
+    if (fromBranch) {
+      const link = document.querySelector<HTMLAnchorElement>('.concept-neighborhood:not([hidden]) .lesson-link');
+      link?.focus({ preventScroll: true });
+    }
+  }));
+  document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.addEventListener('click', () => update('view', button.dataset.view!)));
+  window.addEventListener('popstate', restore);
+  switcher.hidden = false; restore();
+</script>

@@ -4,14 +4,16 @@ A mobile-first visual atlas of machine learning. Clear explanations, useful diag
 
 ## Current state
 
-An early, working Astro template. It includes:
+An early, working learning atlas with 22 introductory lessons across 16 subject groups.
 
-- A responsive atlas homepage and About page.
-- A reusable MDX concept layout.
-- A gradient descent introduction with a static SVG diagram and Python example.
-- Shared styles, keyboard focus indicators, a skip link, and reduced-motion support.
+- A branching prerequisite explorer with Map / List views.
+- Four starting concepts with no earlier lesson: vectors, functions, probability, and graphs.
+- A focused view of each concept’s prerequisites and next steps; branching connections on desktop and vertical progression on narrow screens.
+- Shareable selection in the URL, browser back/forward support, and a return link from each lesson.
+- Short explanations, concrete examples, and self-checks; the original gradient descent lesson includes a static SVG diagram and Python example.
+- A fully usable lesson list without JavaScript.
 
-Interactive experiments, search, offline access, and learning paths are **planned**, not implemented. See [the roadmap](docs/ROADMAP.md).
+Connections represent suggested preparation for these introductions, not an exhaustive curriculum or formal proof that a topic is mastered. Interactive experiments, search, and offline access remain planned. See [the roadmap](docs/ROADMAP.md).
 
 ## Run locally
 
@@ -44,39 +46,25 @@ Introduce visualization or math libraries only when a concept needs them. The in
 src/
   components/             Reusable diagrams and future experiments
   layouts/                Site shell and concept layout
+  data/concepts.json        Content and prerequisite relationships
   pages/
-    index.astro           Atlas, generated from concept MDX metadata
+    index.astro           Map and list generated from concept data
     about.astro
-    concepts/*.mdx        Concept pages and their metadata
+    concepts/[id].astro   Generated introductory lessons
+    concepts/*.mdx        Bespoke concept pages
   styles/global.css       Shared styles and design tokens
 public/                   Static assets
 ```
 
 ## Add a concept
 
-Create `src/pages/concepts/your-concept.mdx`. The filename becomes its URL and the atlas automatically lists it. Start with:
+Add an entry to `src/data/concepts.json` with a unique `id`, `title`, `category`, `prerequisites` (an array of existing IDs), `description`, `intuition`, `example`, `takeaway`, `question`, and `answer`.
 
-```mdx
----
-layout: ../../layouts/ConceptLayout.astro
-title: Your concept
-description: One sentence describing the idea.
-category: Foundations
-difficulty: Beginner
----
+The atlas and `src/pages/concepts/[id].astro` generate the navigation and introductory lesson automatically. No prerequisite means an entry point. Only add a connection when the earlier lesson helps explain the later one; a concept may have multiple prerequisites. Next-step links are derived from those relationships.
 
-## The intuition
+For a richer lesson, add a dedicated MDX page using `ConceptLayout.astro` and exclude its ID from the generic route in `[id].astro`, as done for gradient descent. Keep the shared metadata aligned with the lesson. The layout derives prerequisite links from the URL’s concept ID.
 
-Start with a concrete explanation.
-
-## What to remember
-
-Describe the useful insight and its limits.
-```
-
-All four descriptive metadata fields are expected by the template. Import diagrams from `src/components/` when needed. Use the existing gradient descent page as a complete example.
-
-Before submitting, run the checks and production build, verify the mathematics, and inspect the page on a narrow screen and with keyboard navigation. Add meaningful numerical tests when introducing algorithmic behavior.
+`npm run check` validates content, unique IDs, prerequisite references, and absence of cycles before running Astro diagnostics. Before submitting, also build, verify examples, and inspect keyboard and narrow-screen behavior.
 
 ## Design direction
 

@@ -1,0 +1,14 @@
+---
+import ConceptLayout from '../../layouts/ConceptLayout.astro';
+import concepts from '../../data/concepts.json';
+export function getStaticPaths() {
+  return concepts.filter(c => c.id !== 'gradient-descent').map(concept => ({ params: { id: concept.id }, props: { concept } }));
+}
+const { concept } = Astro.props;
+---
+<ConceptLayout frontmatter={{ ...concept, difficulty: 'Introduction' }}>
+  <h2>The intuition</h2><p>{concept.intuition}</p>
+  <h2>A concrete example</h2><div class="worked-example"><p>{concept.example}</p></div>
+  <h2>What to remember</h2><p>{concept.takeaway}</p>
+  <section class="self-check" aria-labelledby="check-title"><h2 id="check-title">Check your understanding</h2><p>{concept.question}</p><details><summary>Reveal explanation</summary><p>{concept.answer}</p></details></section>
+</ConceptLayout>

@@ -33,3 +33,7 @@ Tokens and responsive rules live in `src/styles/global.css`. Prefer shared conve
 ## Review
 
 Inspect desktop and narrow phone layouts, keyboard navigation, contrast, text wrapping, and diagram labels. Mathematical accuracy and explanatory clarity matter as much as appearance.
+
+## Learning map
+
+Show one concept’s neighborhood at a time: before this, learn this, explore next. Group the subject picker by category. Use fine branch lines on wide screens and a vertical flow on phones. Keep all lessons available in a list without scripting. Store selection in the URL so a lesson can return to the same neighborhood. Never lock a lesson behind prerequisites or imply completion merely from opening it.

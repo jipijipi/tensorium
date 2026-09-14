@@ -402,3 +402,72 @@ h1 {
 }
 
 
+/* Learning atlas */
+[hidden] { display: none !important; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.atlas-hero { padding: 68px 0 56px; }
+.count { font: 11px var(--mono); color: var(--muted); margin-left: 16px; }
+.view-switch { display: flex; gap: 4px; }
+.view-switch button { border: 0; background: transparent; min-height: 48px; padding: 0 18px; font-size: 13px; }
+.view-switch button[aria-pressed="true"] { box-shadow: inset 0 -2px var(--accent); color: var(--accent); }
+.map-help { font-size: 13px; color: var(--muted); margin: 0 0 24px; line-height: 1.6; }
+.explorer { display: grid; grid-template-columns: 205px minmax(0, 1fr); border-top: 1px solid var(--line); }
+.subject-picker { border-right: 1px solid var(--line); padding: 24px 20px 24px 0; max-height: 660px; overflow-y: auto; }
+.subject-group { margin-bottom: 24px; }
+.subject-group h3 { margin: 0 0 8px; font-weight: 400; }
+.subject-group button { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; border: 0; background: transparent; min-height: 48px; padding: 8px; font-size: 13px; gap: 8px; }
+.subject-group button:hover, .branch-node:hover { background: #f0f1ed; }
+.subject-group button[aria-pressed="true"] { background: #eaf0e9; box-shadow: inset 2px 0 var(--accent); color: var(--accent); }
+.root-label { font: 9px var(--mono); color: var(--muted); }
+.map-stage { padding: 35px 0 25px 28px; min-width: 0; }
+.concept-neighborhood { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 22px; align-items: start; }
+.branch-column { min-width: 0; }
+.branch-column > h3 { font-weight: 400; margin: 0 0 28px; font-size: 9px; }
+.branch-nodes { display: flex; flex-direction: column; gap: 12px; position: relative; }
+.branch-node { width: 100%; border: 1px solid var(--line); background: var(--paper); text-align: left; padding: 15px 10px; min-height: 58px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; line-height: 1.4; position: relative; }
+.branch-node::after { content: ''; position: absolute; width: 12px; height: 1px; background: var(--line); right: -13px; top: 50%; }
+.branch-column:last-of-type .branch-node::after { left: -13px; right: auto; }
+.branch-nodes:has(.branch-node)::after { content: ''; position: absolute; right: -13px; top: 29px; bottom: 29px; border-right: 1px solid var(--line); }
+.branch-column:last-of-type .branch-nodes::after { left: -13px; right: auto; }
+.selected-node { border-block: 2px solid var(--accent); padding: 18px 0; position: relative; }
+.selected-node::before, .selected-node::after { content: ''; position: absolute; width: 10px; height: 1px; background: var(--line); top: 27px; left: -10px; }
+.selected-node::after { left: auto; right: -10px; }
+.selected-node .eyebrow { font-size: 9px; }
+.selected-node h2 { font-size: 23px; font-weight: 500; letter-spacing: -.6px; margin: 16px 0; overflow-wrap: anywhere; }
+.selected-node > p:not(.eyebrow), .branch-empty { font-size: 13px; line-height: 1.7; color: var(--muted); }
+.branch-empty { margin-top: 0; }
+.lesson-link { min-height: 48px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--accent); gap: 6px; }
+.path-caption { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 22px; margin-top: 36px; font-size: 12px; color: var(--muted); line-height: 1.7; }
+.list-category { margin-top: 36px; }
+.concept-row small { display: block; margin-top: 12px; color: var(--muted); font-size: 12px; }
+.lesson-connections { border-block: 1px solid var(--line); padding: 16px 0; margin-bottom: 34px; font-size: 13px; }
+.lesson-connections ul { padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; }
+.lesson-connections a { display: inline-flex; min-height: 48px; align-items: center; color: var(--accent); }
+.next-lessons { margin-top: 48px; }
+.worked-example { border-left: 2px solid var(--accent); padding: 1px 0 1px 22px; }
+.self-check { margin-top: 40px; }
+details { border-block: 1px solid var(--line); padding: 10px 0; }
+summary { cursor: pointer; min-height: 48px; align-content: center; color: var(--accent); font-size: 14px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (max-width: 850px) {
+  .explorer { grid-template-columns: 165px minmax(0,1fr); }
+  .map-stage { padding-left: 24px; }
+  .concept-neighborhood { grid-template-columns: 1fr; gap: 22px; }
+  .branch-column > h3 { margin-bottom: 12px; }
+  .branch-nodes { gap: 8px; }
+  .branch-node::after, .branch-nodes::after, .selected-node::before, .selected-node::after { display: none; }
+  .selected-column::before, .selected-column::after { content: '↓'; display: block; color: var(--muted); margin: 0 0 16px; }
+  .selected-column::after { margin: 16px 0 0; }
+  .path-caption { margin-top: 0; }
+  .selected-node h2 { overflow-wrap: normal; }
+}
+@media (max-width: 600px) {
+  .atlas-hero { padding: 45px 0 35px; }
+  .count { display: block; margin: 10px 0 0; }
+  .explorer { grid-template-columns: 1fr; }
+  .subject-picker { display: flex; gap: 22px; border-right: 0; border-bottom: 1px solid var(--line); padding: 18px 4px; max-height: none; overflow-x: auto; }
+  .subject-group { flex: 0 0 175px; margin: 0; }
+  .map-stage { padding: 26px 0 0; }
+  .section-heading { flex-direction: row; align-items: center; }
+}
