@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const concepts = Object.values(import.meta.glob('./concepts/*.mdx', { eager: true })) as { url: string; frontmatter: { title: string; description: string; category: string } }[];
+---
+<BaseLayout>
+  <section class="hero">
+    <p class="eyebrow">A visual atlas of machine learning</p>
+    <h1>Complex ideas.<br /><span class="muted">Clearly understood.</span></h1>
+    <p class="lede">Build intuition for machine learning.<br class="desktop-break" /> One concept, one explanation, one experiment at a time.</p>
+    <a class="text-link" href="#concepts">Explore the atlas <span aria-hidden="true">↓</span></a>
+  </section>
+  <section id="concepts" class="atlas" aria-labelledby="atlas-title">
+    <div class="section-heading"><h2 id="atlas-title">The atlas</h2><span class="eyebrow">{String(concepts.length).padStart(2, '0')} concept · Early edition</span></div>
+    <div class="concept-list">
+      {concepts.map(({ url, frontmatter }, index) => <a class="concept-row" href={url}>
+        <span class="index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+        <div><span class="eyebrow">{frontmatter.category}</span><h3>{frontmatter.title}</h3><p>{frontmatter.description}</p></div>
+        <span class="row-arrow" aria-hidden="true">↗</span>
+      </a>)}
+    </div>
+    <p class="atlas-note">Starting with the foundations. Growing with intention.</p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+layout: ../../layouts/ConceptLayout.astro
+title: Gradient descent
+description: Find a minimum by taking small steps downhill.
+category: Optimization
+difficulty: Beginner
+---
+
+import DescentDiagram from '../../components/DescentDiagram.astro';
+
+## The intuition
+
+Imagine standing on a hillside in fog. You can’t see the whole landscape, but you can feel which way the ground slopes. Take a small step downhill, check the slope again, and repeat.
+
+Gradient descent applies that idea to a loss function: a measure of how far a model’s predictions are from their targets. It adjusts parameters in the direction that locally decreases the loss.
+
+<DescentDiagram />
+
+## The update
+
+For a single parameter **x**, each step follows:
+
+<div className="equation">x_next = x − learning_rate × gradient</div>
+
+The **gradient** tells us the local slope. The **learning rate** controls how large a step we take. A small rate can make progress slow; a large one can overshoot the minimum or cause divergence.
+
+## A tiny example
+
+For the loss **L(x) = x²**, the gradient is **2x**. Start at x = 4 with a learning rate of 0.1:
+
+```python
+x = 4.0
+learning_rate = 0.1
+
+for step in range(10):
+    gradient = 2 * x
+    x = x - learning_rate * gradient
+    print(x, x ** 2)
+```
+
+The first step moves x from 4 to 3.2 and reduces the loss from 16 to 10.24. Repeating the update brings x closer to zero.
+
+## What to remember
+
+Moving downhill is a local decision. For this simple bowl, it leads toward the global minimum. On more complicated landscapes, that outcome is not guaranteed.
+
+<aside className="note">An interactive learning-rate experiment is planned for this page. This first edition introduces the idea with a static diagram.</aside>
