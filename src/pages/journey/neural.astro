@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Journey from '../../components/Journey.astro';
+import stages from '../../data/neural-journey.json';
+---
+<BaseLayout title="Beyond counting — Tensorium">
+  <a class="back-link" href="/?view=journey#tiny-model">← The working tiny model</a>
+  <Journey stages={stages} neural />
+</BaseLayout>

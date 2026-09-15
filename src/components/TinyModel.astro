@@ -1,0 +1,79 @@
+---
+import { train, distribution, WORDS } from '../lib/tiny-model';
+const initial = train([6, 3, 1]);
+---
+<section class="tiny-lab" id="tiny-model" aria-labelledby="tiny-title">
+  <p class="eyebrow">A working model · all calculations happen here</p>
+  <h3 id="tiny-title">Make it write.</h3>
+  <p>Change the training collection. Inspect the counts. Follow each choice from START to END.</p>
+  <div class="tiny-controls">
+    {WORDS.map((word, i) => <label>{word}<input disabled type="number" min="0" max="100" step="1" value={[6,3,1][i]} data-frequency={word} /> <span>examples</span></label>)}
+  </div>
+  <p class="tiny-status" id="tiny-status" role="status">10 examples. The table below is learned by counting neighboring tokens.</p>
+  <div class="tiny-table-wrap"><table class="tiny-table"><caption>Training table · probabilities are rounded for display</caption><thead><tr><th scope="col">Previous token</th><th scope="col">Next token</th><th scope="col">Count</th><th scope="col">Chance</th></tr></thead><tbody id="tiny-rows">{Object.keys(initial).flatMap(token => distribution(initial, token).map(entry => <tr data-from={token}><td>{token}</td><td>{entry.next}</td><td>{entry.count}</td><td>{Math.round(entry.probability * 100)}%</td></tr>))}</tbody></table></div>
+  <div class="tiny-output"><span class="eyebrow">Generated text</span><output id="tiny-word" aria-label="Generated word">—</output><p id="tiny-position">Current token: START. Ready to choose the first character.</p></div>
+  <div class="tiny-actions"><button disabled type="button" id="tiny-step">Choose next token</button><button disabled type="button" id="tiny-run">Generate one word</button><button disabled type="button" id="tiny-reset">Start again</button></div>
+  <ol id="tiny-trace" aria-label="Generation choices" aria-live="polite"></ol>
+  <p class="tiny-note">The highlighted rows are the choices available now. A new word starts at START. Changing the collection rebuilds the table and clears the current word.</p>
+  <noscript><p>The table shows the default model. Enable JavaScript to change counts and generate words; the explanations above remain fully readable.</p></noscript>
+</section>
+<script>
+  import { START, END, train, distribution, sample } from '../lib/tiny-model';
+  if (document.querySelector('#tiny-model')) {
+  const inputs = [...document.querySelectorAll<HTMLInputElement>('[data-frequency]')];
+  const rows = document.querySelector<HTMLTableSectionElement>('#tiny-rows')!;
+  const status = document.querySelector<HTMLElement>('#tiny-status')!;
+  const word = document.querySelector<HTMLOutputElement>('#tiny-word')!;
+  const position = document.querySelector<HTMLElement>('#tiny-position')!;
+  const trace = document.querySelector<HTMLOListElement>('#tiny-trace')!;
+  const step = document.querySelector<HTMLButtonElement>('#tiny-step')!;
+  const run = document.querySelector<HTMLButtonElement>('#tiny-run')!;
+  const reset = document.querySelector<HTMLButtonElement>('#tiny-reset')!;
+  let counts = train([6, 3, 1]);
+  let current = START;
+  let text = '';
+  let valid = true;
+  function paint() {
+    word.textContent = text || '—';
+    position.textContent = !valid ? 'Add valid training examples to begin.' : current === END ? 'END selected. The word is complete; END is not written into the text.' : `Current token: ${current}. Choose from its highlighted rows.`;
+    rows.querySelectorAll<HTMLTableRowElement>('tr').forEach(row => row.classList.toggle('active-transition', valid && row.dataset.from === current));
+    step.disabled = !valid || current === END;
+    run.disabled = !valid;
+    reset.disabled = !valid;
+  }
+  function restart() { current = START; text = ''; trace.replaceChildren(); paint(); }
+  function rebuild() {
+    const frequencies = inputs.map(input => input.value === '' ? NaN : Number(input.value));
+    try {
+      counts = train(frequencies);
+      valid = frequencies.some(n => n > 0);
+      status.textContent = valid ? `${frequencies.reduce((a,b) => a+b,0)} examples. Table rebuilt from the collection.` : 'Add at least one example. With no observations, there are no probabilities to sample.';
+    } catch {
+      counts = {}; valid = false; status.textContent = 'Use whole-number counts from 0 to 100 for each word.';
+    }
+    rows.replaceChildren();
+    for (const token of Object.keys(counts)) for (const entry of distribution(counts, token)) {
+      const row = document.createElement('tr'); row.dataset.from = token;
+      for (const value of [token, entry.next, String(entry.count), `${(entry.probability * 100).toFixed(1)}%`]) { const cell = document.createElement('td'); cell.textContent = value; row.append(cell); }
+      rows.append(row);
+    }
+    restart();
+  }
+  function advance() {
+    if (!valid || current === END) return;
+    const draw = Math.random();
+    const from = current;
+    current = sample(counts, current, draw);
+    if (current !== END) text += current;
+    const chance = distribution(counts, from).find(entry => entry.next === current)!.probability;
+    const line = document.createElement('li');
+    line.textContent = `${from} → ${current} · ${(chance * 100).toFixed(1)}% chance${distribution(counts, from).length > 1 ? ` · random draw ${draw.toFixed(6)} (rounded)` : ' · the only observed choice'}`;
+    trace.append(line); paint();
+  }
+  inputs.forEach(input => { input.disabled = false; input.addEventListener('input', rebuild); });
+  step.addEventListener('click', advance);
+  reset.addEventListener('click', restart);
+  run.addEventListener('click', () => { restart(); for (let i = 0; i < 8 && current !== END; i++) advance(); });
+  paint();
+  }
+</script>

@@ -7,7 +7,9 @@ A mobile-first visual atlas of machine learning. Clear explanations, useful diag
 An early, working learning atlas with 22 introductory lessons across 16 subject groups.
 
 - A Journey / Map / List switch. Journey is the default for new visits; existing concept links still open the map.
-- A continuous ten-step language-model journey, from generating text through tokens, IDs, counts, vectors, embeddings, context, learning, and generation.
+- A seven-step tiny-model journey: examples, boundaries, pair counts, probabilities, sampling, generation, and limitations.
+- A working cat/car/can experiment with editable frequencies, a live count table, token-by-token generation, and an explicit END marker.
+- The earlier neural-model journey preserved as a separate Part Two.
 - One short explanation and concrete example per step, with a linked overview and semantic color highlights.
 - A branching prerequisite explorer.
 - Four starting concepts with no earlier lesson: vectors, functions, probability, and graphs.
@@ -61,9 +63,9 @@ public/                   Static assets
 
 ## Journey content
 
-`src/data/journey.json` defines ten beginner steps, each with an explanation, labelled example rows, and a transition to the next idea. `Journey.astro` renders the whole path as a continuous page. No quizzes or deeper disclosures interrupt the journey. The existing 22 concepts and their examples remain in Map, List, and individual lesson pages.
+`src/data/journey.json` defines the seven-step counting-model introduction. `src/components/TinyModel.astro` exposes the full training table and generation trace. `src/lib/tiny-model.ts` implements counting and sampling; `npm test` checks normalization, boundaries, stopping, and invalid input handling. Input counts are whole numbers from 0 to 100; an empty collection disables generation. Sampling uses browser randomness and does not promise exact proportions in small runs.
 
-Stage links use `#journey-<id>`; `?view=journey`, `?view=map`, and `?view=list` select views. With JavaScript disabled, the journey and lesson list remain readable. `npm run check` validates stage content and example rows. This explains the mental progression; executable training exercises remain future work.
+The full first journey stays on the homepage. The existing neural explanation is preserved in `src/data/neural-journey.json` at `/journey/neural/`. The 22 concept lessons remain in Map and List. With JavaScript disabled, the lesson and initial count table remain readable.
 
 ## Add a concept
 

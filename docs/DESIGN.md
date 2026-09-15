@@ -40,8 +40,12 @@ Show one concept’s neighborhood at a time: before this, learn this, explore ne
 
 ## Journey view
 
-Use a continuous beginner narrative: a need introduces an idea, a small example makes it concrete, and a transition motivates the next idea. Keep the ten-step overview linked to visible sections. Combine what and why in one explanation. No deeper sections or quizzes in this view; the concept library remains in Map and List. Start with characters, then distinguish token IDs, probability vectors, and learned embeddings. Opening or reading a section never implies completion.
+Start with a complete working count model, not the machinery of a neural model. Seven short sections explain the cat/car/can collection, boundaries, pair counts, normalization, sampling, generation, and limitations. Keep its experiment on the same page. Learners can inspect every count and sampling step. A second page preserves the earlier neural-model progression; Map and List retain all concept lessons.
+
+No automatic playback or hidden training. Changing frequencies rebuilds counts and resets generation. END stops output without becoming part of the displayed word. An empty collection has no model to sample. The default table remains readable without JavaScript.
 
 ## Explanatory typography
 
 Use larger monospace characters, token IDs, vectors, and numeric comparisons to make examples legible as diagrams. Pair every highlight with a label or explicit operation; color alone never carries meaning. Keep body text neutral and highlight selected terms consistently through `ConceptText.astro`. `JourneyExample.astro` supplies labelled static typographic examples. All examples remain readable without JavaScript and are explicitly illustrative rather than live model output.
+
+Keep the cat/car/can collection and one set of scoring values throughout the representation explanation. Establish that counts already solve the toy task. Motivate embeddings through short token-specific recipes and shared scoring patterns, with an explicit parameter-count comparison and expressiveness tradeoff. Introduce longer sentence contexts only as an explicit extension of the original collection. Never imply that the toy data requires embeddings or that invented attention shares came from training.

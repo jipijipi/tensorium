@@ -1,13 +1,16 @@
 ---
-import stages from '../data/journey.json';
+import defaultStages from '../data/journey.json';
+import TinyModel from './TinyModel.astro';
+interface Props { stages?: typeof defaultStages; neural?: boolean }
+const { stages = defaultStages, neural = false } = Astro.props;
 import ConceptText from './ConceptText.astro';
 import JourneyExample from './JourneyExample.astro';
 ---
 <div id="journey-view">
   <header class="journey-intro">
-    <p class="eyebrow">One idea leads to the next</p>
-    <h2>I want to make a model that writes.</h2>
-    <p>Start with that goal. Follow the small ideas needed to get there.</p>
+    <p class="eyebrow">{neural ? 'Part two · beyond counting' : 'Part one · a model you can see working'}</p>
+    <h2>{neural ? 'Why use a more capable model?' : 'Ten examples. One tiny language model.'}</h2>
+    <p>{neural ? 'Explore learned representations after understanding the complete counting model.' : 'Count what follows each character, turn counts into chances, and generate a word. No vectors or embeddings needed yet.'}</p>
   </header>
   <ol class="journey-overview simple-overview" aria-label="The path from text to a language model">
     {stages.map((stage, i) => <li data-tone={stage.tone}><a href={`#journey-${stage.id}`}><span class="journey-number">{String(i + 1).padStart(2, '0')}</span><strong>{stage.title}</strong></a></li>)}
@@ -20,7 +23,8 @@ import JourneyExample from './JourneyExample.astro';
         <figure class="journey-example"><JourneyExample rows={stage.example} /><figcaption>{stage.caption}</figcaption></figure>
         <p class="journey-bridge">{i < stages.length - 1 && <span aria-hidden="true">↓ </span>}{stage.next}</p>
       </div>
+    {stage.id === 'generate' && !neural && <TinyModel />}
     </article>)}
   </div>
-  <p class="journey-end">This is the big picture behind a tiny language model. The Map and List keep the full concept library available when you want to explore further.</p>
+  <div class="journey-end">{neural ? <a class="text-link" href="/?view=journey#tiny-model">← Return to the working tiny model</a> : <><p>You now have a complete model: examples → counts → probabilities → generated text.</p><a class="text-link" href="/journey/neural/">Part two: why go beyond counting? →</a></>}</div>
 </div>

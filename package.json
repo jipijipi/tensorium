@@ -11,7 +11,8 @@
     "dev": "astro dev",
     "check": "node scripts/check-concepts.mjs && astro check",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "node scripts/test-tiny-model.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",

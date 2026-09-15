@@ -3,214 +3,141 @@
     "id": "goal",
     "title": "The goal",
     "tone": "generate",
-    "question": "I want to generate text.",
-    "explanation": "Instead of writing a whole sentence at once, I can grow it one small piece at a time. I start with some text, add a piece, then repeat.",
+    "question": "I want to generate “cat”, “car”, or “can”.",
+    "explanation": "I will build a model that grows a word one character at a time. It will learn only from a tiny collection of examples, and all its decisions will be visible.",
     "example": [
       {
-        "label": "Start",
-        "value": "ca"
-      },
-      {
-        "label": "Add a character",
-        "value": "cat"
-      },
-      {
-        "label": "Keep going",
-        "value": "cats…"
+        "label": "Our training collection",
+        "value": "cat × 6   car × 3   can × 1"
       }
     ],
-    "caption": "This is an illustration of growing text, not output from a running model.",
-    "next": "To choose what to add, I need a way to guess what comes next."
-  },
-  {
-    "id": "predict",
-    "title": "The next guess",
-    "tone": "predict",
-    "question": "I need to guess the next character.",
-    "explanation": "After “ca”, I might see “t”, “r”, or “n”. There is no single right answer for every situation. I need probabilities: numbers that say how likely each choice is.",
-    "example": [
-      {
-        "label": "Possible continuation",
-        "value": "cat"
-      },
-      {
-        "label": "Another possibility",
-        "value": "car"
-      },
-      {
-        "label": "Another possibility",
-        "value": "can"
-      }
-    ],
-    "caption": "The possibilities depend on the text the model has seen.",
-    "next": "First, I need to decide exactly what kind of piece I am predicting."
+    "caption": "Repeating a word makes it more common in the training collection. This first model needs counts, not neural networks.",
+    "next": "First, I need to show where each example begins and ends."
   },
   {
     "id": "tokens",
-    "title": "Tokens",
+    "title": "Pieces & boundaries",
     "tone": "represent",
-    "question": "I need to split text into pieces.",
-    "explanation": "A token is one piece of text the model handles at a time. For our first model, each character is a token, including spaces. Larger language models often use pieces of words instead.",
+    "question": "Break each word into characters, with a start and a stop.",
+    "explanation": "Each character is a token: one piece the model handles. I also add two special tokens, START and END. They mark boundaries; they are not letters in the word. START lets the model choose a first character. END tells it to stop.",
     "example": [
       {
-        "label": "Text",
-        "value": "cat"
+        "label": "One example",
+        "value": "START → c → a → t → END"
       },
       {
-        "label": "Our character tokens",
-        "value": "c  ·  a  ·  t"
+        "label": "Another example",
+        "value": "START → c → a → r → END"
+      },
+      {
+        "label": "The third example",
+        "value": "START → c → a → n → END"
       }
     ],
-    "caption": "Here, three characters make three tokens. We keep this rule for the rest of the journey.",
-    "next": "Now I need a consistent way to identify each token in my calculations."
-  },
-  {
-    "id": "represent",
-    "title": "Token IDs",
-    "tone": "represent",
-    "question": "I give each token a number.",
-    "explanation": "I make a vocabulary: a list of the tokens my model knows. Each gets a token ID, like a numbered seat. That lets me use it to look up counts and, later, learned numbers. The ID is a label, not a meaning or a score.",
-    "example": [
-      {
-        "label": "Vocabulary",
-        "value": "c = 0   a = 1   t = 2   r = 3   n = 4"
-      },
-      {
-        "label": "Encode “cat”",
-        "value": "[0, 1, 2]"
-      },
-      {
-        "label": "Decode those IDs",
-        "value": "cat"
-      }
-    ],
-    "caption": "We could renumber the vocabulary, as long as all our lookups stayed consistent.",
-    "next": "With tokens identified, I can count which ones tend to follow each other."
+    "caption": "Each repeated word contributes its whole sequence. Keeping the boundaries prevents the end of one word from becoming the beginning of the next.",
+    "next": "Now I can count every pair of neighboring tokens."
   },
   {
     "id": "counts",
-    "title": "Count patterns",
+    "title": "Count pairs",
     "tone": "predict",
-    "question": "I can make a first guess by counting.",
-    "explanation": "Imagine a tiny collection containing “cat” six times, “car” three times, and “can” once. After “a”, I count six “t”s, three “r”s, and one “n”. Dividing by ten turns these counts into probabilities. This is already a very simple language model.",
+    "question": "Count what follows each token.",
+    "explanation": "For every example, I record each neighboring pair. All ten words start with c, and every c is followed by a. After a, the collection splits: six t’s, three r’s, and one n. Each final letter is followed by END.",
     "example": [
       {
-        "label": "After “a”: counts",
-        "value": "t: 6   r: 3   n: 1"
+        "label": "Always the same beginning",
+        "value": "START → c: 10     c → a: 10"
       },
       {
-        "label": "Divide by 10",
-        "value": "t: 60%   r: 30%   n: 10%"
+        "label": "The branching point",
+        "value": "a → t: 6     a → r: 3     a → n: 1"
+      },
+      {
+        "label": "How words end",
+        "value": "t → END: 6     r → END: 3     n → END: 1"
       }
     ],
-    "caption": "These numbers come from the invented collection above. This baseline looks only at the previous character.",
-    "next": "I will be working with lots of numbers together. There is a useful name for an ordered list of them."
+    "caption": "This table is the learned model. A model that predicts using only the previous token is called a bigram model.",
+    "next": "Counts tell me how often something happened. I need chances to make a choice."
   },
   {
-    "id": "vectors",
-    "title": "Vectors",
-    "tone": "represent",
-    "question": "I can keep related numbers in a list.",
-    "explanation": "A vector is an ordered list of numbers. For example, I can store the probabilities of “t”, “r”, and “n” as [0.6, 0.3, 0.1]. Each position has a known job. Change the order without changing the labels, and the list means something different.",
+    "id": "probabilities",
+    "title": "Counts to chances",
+    "tone": "predict",
+    "question": "Divide by the total for the current token.",
+    "explanation": "After a there are ten observations. Six out of ten gives t a probability of 60%; three gives r 30%; one gives n 10%. For START and c there is only one observed next token, so that next token has probability 100%.",
     "example": [
       {
-        "label": "Order of outcomes",
-        "value": "t     r     n"
+        "label": "After a",
+        "value": "t: 6 ÷ 10 = 60%\nr: 3 ÷ 10 = 30%\nn: 1 ÷ 10 = 10%"
       },
       {
-        "label": "Probability vector",
-        "value": "[0.6, 0.3, 0.1]"
+        "label": "After c",
+        "value": "a: 10 ÷ 10 = 100%"
       }
     ],
-    "caption": "This vector holds probabilities. Other vectors can hold other kinds of numbers.",
-    "next": "To build a more flexible model, I also want an adjustable vector for each token."
+    "caption": "Divide by the total in that token’s row—not by all pairs in the collection. Each row’s probabilities add up to 100%.",
+    "next": "To write a word, I need to choose from these chances."
   },
   {
-    "id": "embeddings",
-    "title": "Embeddings",
-    "tone": "represent",
-    "question": "I give each token a learnable vector.",
-    "explanation": "An embedding is a vector the model learns for a token. The token ID tells me which vector to look up. Instead of doing arithmetic on arbitrary ID numbers, the model works with these adjustable values to build predictions.",
+    "id": "sampling",
+    "title": "Choose a token",
+    "tone": "generate",
+    "question": "Use a random draw to follow the probabilities.",
+    "explanation": "Imagine ten tickets: six say t, three say r, and one says n. Drawing a ticket gives more common choices a better chance without always choosing the most common one. This is sampling.",
     "example": [
       {
-        "label": "Token and ID",
-        "value": "“c” → 0"
+        "label": "Tickets after a",
+        "value": "t  t  t  t  t  t  r  r  r  n"
       },
       {
-        "label": "Look up its embedding",
-        "value": "[0.2, −0.4, 0.7]"
+        "label": "Equivalent draw from 0 up to 1",
+        "value": "below 0.6 → t\n0.6 to below 0.9 → r\n0.9 to below 1 → n"
       }
     ],
-    "caption": "These three values are made up. Real embedding values start from an initialization and change during training. They are not percentages or hand-written labels like “animal” or “plural”.",
-    "next": "A token alone still tells me very little. I need to consider the surrounding text."
-  },
-  {
-    "id": "context",
-    "title": "Context & attention",
-    "tone": "context",
-    "question": "I need more than the last character.",
-    "explanation": "“The cat” and “a hat” both end in “t”, so our counting model gives them the same next guess. A richer model uses earlier tokens too. Attention combines information from their vectors using learned weights. Position information tells the model which token came where.",
-    "example": [
-      {
-        "label": "Context A",
-        "value": "the cat"
-      },
-      {
-        "label": "Context B",
-        "value": "a hat"
-      },
-      {
-        "label": "Same last character",
-        "value": "t — but different earlier text"
-      }
-    ],
-    "caption": "When predicting what follows a position, the model can use tokens up to that position, never the future answer. Attention is a way to combine context, not a guarantee of understanding.",
-    "next": "The embeddings and attention contain adjustable numbers. How do those numbers become useful?"
-  },
-  {
-    "id": "learn",
-    "title": "Learning",
-    "tone": "learn",
-    "question": "I improve the numbers with practice.",
-    "explanation": "I show the model a piece of real text, ask it to predict the next token, and compare its probabilities with the token that actually followed. A loss measures how poorly it predicted that token. Training makes small changes to the model’s numbers to reduce this loss, over many examples.",
-    "example": [
-      {
-        "label": "Example text",
-        "value": "cat"
-      },
-      {
-        "label": "Input → actual next token",
-        "value": "ca → t"
-      },
-      {
-        "label": "Practice loop",
-        "value": "predict → measure loss → adjust → repeat"
-      }
-    ],
-    "caption": "Embeddings and the other model weights learn together. I also check predictions on text kept out of training: memorizing the examples is not enough.",
-    "next": "Once trained, I can keep those numbers fixed and use the model to write."
+    "caption": "A few generated words need not match 60/30/10 exactly. Randomness is part of sampling, not a change to the learned counts.",
+    "next": "I can repeat this choice after every token, starting at START."
   },
   {
     "id": "generate",
-    "title": "Generate",
+    "title": "Write, then stop",
     "tone": "generate",
-    "question": "I choose a token, then do it again.",
-    "explanation": "The trained model gives me probabilities for the next token. I sample one: a more likely token has a greater chance of being chosen. I add it to the text and predict again using the updated context. Repeating this loop generates text.",
+    "question": "Choose, append, and repeat until END.",
+    "explanation": "Start at START. Its row gives c, so write c. The c row gives a, so write a. The a row chooses t, r, or n. That final letter’s row gives END, so stop without writing the marker. The counts stay fixed while the word grows.",
     "example": [
       {
-        "label": "Context",
-        "value": "ca"
+        "label": "One possible run",
+        "value": "START → c → a → r → END"
       },
       {
-        "label": "Suppose I sample “t”",
-        "value": "cat"
-      },
-      {
-        "label": "Next step",
-        "value": "use “cat” to guess again"
+        "label": "The text we return",
+        "value": "car"
       }
     ],
-    "caption": "The text changes during generation; the trained weights stay fixed. A small model may produce nonsense—it has learned patterns, not guaranteed facts.",
-    "next": "That is the core journey: text becomes tokens, tokens become numbers, practice improves predictions, and repeated predictions become text."
+    "caption": "That is a complete working language model. In this collection it can generate only cat, car, and can. Try changing their counts below.",
+    "next": "The experiment follows exactly this table. Nothing is hidden in a trained neural network."
+  },
+  {
+    "id": "limits",
+    "title": "What it cannot do",
+    "tone": "context",
+    "question": "A working model can still be very limited.",
+    "explanation": "This model remembers only the last token. It cannot distinguish different longer prefixes ending in the same character. It also gives unobserved transitions zero probability. Our three-word collection is too small to teach general language; generating a familiar word does not prove understanding.",
+    "example": [
+      {
+        "label": "It knows",
+        "value": "Which token followed the previous one."
+      },
+      {
+        "label": "It does not know",
+        "value": "What a cat, car, or can means."
+      },
+      {
+        "label": "A useful next experiment",
+        "value": "Use two previous tokens instead of one."
+      }
+    ],
+    "caption": "Longer contexts can help, but require more observations and create more unseen combinations. Learned representations become relevant when we tackle those problems.",
+    "next": "First understand this complete loop. Then explore why a more capable model needs different tools."
   }
 ]
