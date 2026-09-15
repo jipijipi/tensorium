@@ -15,6 +15,19 @@
 - [x] Worked examples and native expandable self-checks for generated lessons.
 - [x] Validation of prerequisite references and cycles.
 
+## Language-model journey — implemented
+
+- [x] Five-stage overview, before lesson details.
+- [x] What/why explanations with optional mechanics.
+- [x] Existing concepts and examples embedded in expandable sections.
+- [x] Journey tab before Map and List, with existing map URLs preserved.
+- [ ] Add executable character-tokenizer and bigram baseline exercises.
+- [ ] Extend the build toward a tiny causal transformer and generation loop.
+
+## Visual implementation planning
+
+The [concept-by-concept assessment](VISUALIZATION-PLAN.md) covers static illustrations, animation, and interaction for all current lessons. Build the small shared plot/control components first, then use them for the gradient descent experiment below.
+
 ## Next — prove one learning experience
 
 - [ ] Add a gradient descent experiment: learning rate, starting point, step, play/pause, reset, and current loss.

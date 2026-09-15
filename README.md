@@ -6,7 +6,11 @@ A mobile-first visual atlas of machine learning. Clear explanations, useful diag
 
 An early, working learning atlas with 22 introductory lessons across 16 subject groups.
 
-- A branching prerequisite explorer with Map / List views.
+- A Journey / Map / List switch. Journey is the default for new visits; existing concept links still open the map.
+- A five-stage language-model journey: Predict → Represent → Learn → Use context → Generate.
+- Semantic color highlights and typographic examples connect prediction, representations, learning, context, and generation.
+- An overview of the whole journey, with expandable what/why explanations, examples, checkpoints, and supporting concepts on the same page.
+- A branching prerequisite explorer.
 - Four starting concepts with no earlier lesson: vectors, functions, probability, and graphs.
 - A focused view of each concept’s prerequisites and next steps; branching connections on desktop and vertical progression on narrow screens.
 - Shareable selection in the URL, browser back/forward support, and a return link from each lesson.
@@ -56,6 +60,12 @@ src/
 public/                   Static assets
 ```
 
+## Journey content
+
+`src/data/journey.json` defines the five stages and references supporting concept IDs. `Journey.astro` renders the overview and native expandable lessons, reusing existing concept text and examples. The path explains a future tiny character-level transformer build; it does not yet include executable model training.
+
+Stage links use `#journey-<id>`; `?view=journey`, `?view=map`, and `?view=list` select views. With JavaScript disabled, the journey and lesson list remain readable. `npm run check` validates stage content and concept references.
+
 ## Add a concept
 
 Add an entry to `src/data/concepts.json` with a unique `id`, `title`, `category`, `prerequisites` (an array of existing IDs), `description`, `intuition`, `example`, `takeaway`, `question`, and `answer`.
@@ -71,6 +81,10 @@ For a richer lesson, add a dedicated MDX page using `ConceptLayout.astro` and ex
 **Tech minimalism: uncluttered, functional, clean.**
 
 Use generous space, readable typography, subtle rules, and restrained color. Controls should serve the explanation. See [design principles](docs/DESIGN.md) for the working conventions.
+
+## Visual lesson planning
+
+See the [visualization feasibility assessment](docs/VISUALIZATION-PLAN.md) for all 22 concepts: separate illustration, animation, and interaction difficulty ratings, concrete teaching ideas, implementation pitfalls, and a suggested build order. These are proposals, not implemented experiments.
 
 ## Contributing
 

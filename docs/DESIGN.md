@@ -5,7 +5,7 @@ Tensorium should feel like a precise reading tool. The concept is the focal poin
 ## Visual language
 
 - Warm off-white background, near-black text, muted secondary text.
-- One dark green accent for links, active controls, and meaningful diagram elements.
+- Dark green remains the navigation accent. Journey explanations use semantic highlights: blue for prediction/probability, violet for representations, amber for learning/loss, teal for context, and green for generation.
 - System sans-serif typography; monospace for small labels and code.
 - Generous whitespace, subtle one-pixel rules, minimal ornament.
 - Avoid decorative gradients, shadows, oversized badges, and unnecessary cards.
@@ -37,3 +37,11 @@ Inspect desktop and narrow phone layouts, keyboard navigation, contrast, text wr
 ## Learning map
 
 Show one concept’s neighborhood at a time: before this, learn this, explore next. Group the subject picker by category. Use fine branch lines on wide screens and a vertical flow on phones. Keep all lessons available in a list without scripting. Store selection in the URL so a lesson can return to the same neighborhood. Never lock a lesson behind prerequisites or imply completion merely from opening it.
+
+## Journey view
+
+Lead with the whole five-stage path, then let the learner open one question at a time. Explain what and why before exposing mechanics. Keep supporting concepts and examples inline through native disclosures; full lesson pages remain optional. Opening a stage does not mark it complete. New visits start with Journey; explicit view URLs and existing concept links retain their intended destinations.
+
+## Explanatory typography
+
+Use larger monospace characters, token IDs, vectors, and numeric comparisons to make examples legible as diagrams. Pair every highlight with a label or explicit operation; color alone never carries meaning. Keep body text neutral and highlight selected terms consistently through `ConceptText.astro`. `JourneyExample.astro` supplies five static typographic examples. All examples remain readable without JavaScript and are explicitly illustrative rather than live model output.

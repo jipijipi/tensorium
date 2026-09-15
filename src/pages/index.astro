@@ -1,19 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Journey from '../components/Journey.astro';
 import concepts from '../data/concepts.json';
 const categories = [...new Set(concepts.map(c => c.category))];
 ---
 <BaseLayout>
   <section class="hero atlas-hero">
     <p class="eyebrow">A visual atlas of machine learning</p>
-    <h1>Start simple.<br /><span class="muted">See how ideas connect.</span></h1>
-    <p class="lede">Explore the foundations, follow a branch, and build your understanding one concept at a time.</p>
+    <h1>Understand the ideas.<br /><span class="muted">Build a language model.</span></h1>
+    <p class="lede">See the journey first. Explore the concepts when you need them.</p>
   </section>
   <section id="concepts" aria-labelledby="atlas-title">
     <div class="section-heading">
       <h2 id="atlas-title">The learning atlas <span class="count">{concepts.length} introductions</span></h2>
-      <div class="view-switch" hidden aria-label="Atlas view"><button type="button" data-view="map" aria-pressed="true">Map</button><button type="button" data-view="list" aria-pressed="false">List</button></div>
+      <div class="view-switch" hidden aria-label="Atlas view"><button type="button" data-view="journey" aria-pressed="true">Journey</button><button type="button" data-view="map" aria-pressed="false">Map</button><button type="button" data-view="list" aria-pressed="false">List</button></div>
     </div>
+    <Journey />
     <div id="map-view" hidden>
       <p class="map-help">Choose a subject. Follow the connections from prerequisites to next steps.</p>
       <div class="explorer">
@@ -41,6 +43,7 @@ const categories = [...new Set(concepts.map(c => c.category))];
   </section>
 </BaseLayout>
 <script>
+  const journey = document.querySelector<HTMLElement>('#journey-view')!;
   const map = document.querySelector<HTMLElement>('#map-view')!;
   const list = document.querySelector<HTMLElement>('#list-view')!;
   const switcher = document.querySelector<HTMLElement>('.view-switch')!;
@@ -49,10 +52,11 @@ const categories = [...new Set(concepts.map(c => c.category))];
   function restore() {
     const params = new URLSearchParams(location.search);
     const selected = panels.find(p => p.dataset.panel === params.get('concept'))?.dataset.panel ?? 'vectors';
-    const view = params.get('view') === 'list' ? 'list' : 'map';
+    const requested = params.get('view');
+    const view = requested && ['journey', 'map', 'list'].includes(requested) ? requested : params.has('concept') ? 'map' : 'journey';
     panels.forEach(p => p.hidden = p.dataset.panel !== selected);
     selectors.forEach(button => { if (button.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', String(button.dataset.select === selected)); });
-    map.hidden = view !== 'map'; list.hidden = view !== 'list';
+    journey.hidden = view !== 'journey'; map.hidden = view !== 'map'; list.hidden = view !== 'list';
     document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
     document.querySelector('#selection-status')!.textContent = panels.find(p => !p.hidden)?.getAttribute('aria-label') ?? '';
   }
@@ -69,6 +73,16 @@ const categories = [...new Set(concepts.map(c => c.category))];
     }
   }));
   document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.addEventListener('click', () => update('view', button.dataset.view!)));
-  window.addEventListener('popstate', restore);
-  switcher.hidden = false; restore();
+  function openHashStage() {
+    const stage = [...document.querySelectorAll<HTMLDetailsElement>('[data-stage]')].find(s => `#${s.id}` === location.hash);
+    if (stage && !journey.hidden) stage.open = true;
+  }
+  document.querySelectorAll<HTMLAnchorElement>('[data-open-stage]').forEach(link => link.addEventListener('click', () => {
+    const stage = document.getElementById(`journey-${link.dataset.openStage}`) as HTMLDetailsElement;
+    stage.open = true;
+    stage.querySelector('summary')?.focus({ preventScroll: true });
+  }));
+  window.addEventListener('popstate', () => { restore(); openHashStage(); });
+  window.addEventListener('hashchange', openHashStage);
+  switcher.hidden = false; restore(); openHashStage();
 </script>

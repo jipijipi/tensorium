@@ -1,0 +1,17 @@
+---
+interface Props { text: string }
+const { text } = Astro.props;
+const terms = [
+  ['next token', 'predict'], ['probabilities', 'predict'], ['probability', 'predict'],
+  ['embeddings', 'represent'], ['embedding', 'represent'], ['vectors', 'represent'], ['vector', 'represent'], ['token IDs', 'represent'],
+  ['backpropagation', 'learn'], ['gradients', 'learn'], ['parameters', 'learn'], ['loss', 'learn'],
+  ['causal attention', 'context'], ['attention', 'context'], ['context', 'context'],
+  ['sampling', 'generate'], ['sample', 'generate'], ['generation', 'generate'],
+];
+const pattern = new RegExp(`\\b(${terms.map(([term]) => term).join('|')})\\b`, 'gi');
+const pieces = text.split(pattern);
+---
+{pieces.map(piece => {
+  const term = terms.find(([word]) => word.toLowerCase() === piece.toLowerCase());
+  return term ? <mark class="concept-emphasis" data-tone={term[1]}>{piece}</mark> : piece;
+})}
