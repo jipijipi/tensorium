@@ -16,8 +16,11 @@ function visit(id, path = new Set()) {
 }
 concepts.forEach(c => visit(c.id));
 console.log(`Validated ${concepts.length} concepts: complete content, valid references, no cycles.`);
-const journey = JSON.parse(readFileSync(new URL('../src/data/journey.json', import.meta.url)));
-assert.equal(new Set(journey.map(s => s.id)).size, journey.length, 'Journey stage IDs must be unique');
+const journey = [...JSON.parse(readFileSync(new URL('../src/data/journey.json', import.meta.url))), ...JSON.parse(readFileSync(new URL('../src/data/neural-journey.json', import.meta.url)))];
+for (const file of ['journey.json', 'neural-journey.json']) {
+  const stages = JSON.parse(readFileSync(new URL(`../src/data/${file}`, import.meta.url)));
+  assert.equal(new Set(stages.map(s => s.id)).size, stages.length, `${file}: IDs must be unique`);
+}
 for (const stage of journey) {
   for (const field of ['id', 'title', 'tone', 'question', 'explanation', 'caption', 'next']) assert(stage[field]?.trim(), `${stage.id}: missing ${field}`);
   assert(['predict', 'represent', 'learn', 'context', 'generate'].includes(stage.tone), `${stage.id}: unknown color role`);

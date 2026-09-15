@@ -1,0 +1,38 @@
+<section class="context-lab" aria-labelledby="context-lab-title">
+  <h4 id="context-lab-title">What can the count model remember?</h4>
+  <p>Trained on the three sentences above, once each. Spaces count as characters.</p>
+  <div class="context-controls">
+    <label>Prompt<select id="context-prompt" disabled><option value="the cat is ">the cat is ␠</option><option value="the car is ">the car is ␠</option><option value="the can is ">the can is ␠</option><option value="the cab is ">the cab is ␠</option></select></label>
+    <label>Characters remembered<select id="context-width" disabled><option value="1">1 character</option><option value="3">3 characters</option><option value="8">8 characters</option></select></label>
+  </div>
+  <p class="context-preview"><span id="context-forgotten">the cat is</span><mark id="context-kept">␠</mark></p>
+  <p class="visual-label">Faded: forgotten · Highlighted: used for lookup · ␠ = space</p>
+  <div id="context-result" role="status">Enable JavaScript to compare the observed next-character counts for each context.</div>
+</section>
+<script>
+  import { nextCounts } from '../lib/context-counts';
+  const prompt = document.querySelector<HTMLSelectElement>('#context-prompt');
+  const width = document.querySelector<HTMLSelectElement>('#context-width');
+  if (prompt && width) {
+    function render() {
+      const value = prompt!.value;
+      const result = nextCounts(value, Number(width!.value));
+      const show = (s: string) => s.replaceAll(' ', '␠');
+      document.querySelector('#context-forgotten')!.textContent = show(value.slice(0,value.length-result.context.length));
+      document.querySelector('#context-kept')!.textContent = show(result.context);
+      const target = document.querySelector('#context-result')!;
+      target.replaceChildren();
+      const total = Object.values(result.counts).reduce((a,b)=>a+b,0);
+      if (!total) { target.textContent = 'No matching context in the training sentences. There is no count row to sample from.'; return; }
+      for (const [token, count] of Object.entries(result.counts)) {
+        const row=document.createElement('div');row.className='context-result-row';
+        const name=document.createElement('code');name.textContent=show(token);
+        const bar=document.createElement('span');bar.className='chance-bar';bar.style.setProperty('--chance',`${count/total*100}%`);bar.setAttribute('aria-hidden','true');
+        const number=document.createElement('span');number.textContent=`${count}/${total} · ${(count/total*100).toFixed(1)}%`;
+        row.append(name,bar,number);target.append(row);
+      }
+    }
+    prompt.disabled=false;width.disabled=false;
+    prompt.addEventListener('change',render);width.addEventListener('change',render);render();
+  }
+</script>

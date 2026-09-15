@@ -19,7 +19,7 @@
 
 - [x] Seven-step introduction to a complete count-based language model.
 - [x] Editable cat/car/can frequencies, visible counts, sampling trace, and start/end markers.
-- [x] Earlier neural-model material preserved as Part Two.
+- [x] Part Two rebuilt around limitations of the tiny model, with a working context-length experiment and visual mechanisms.
 - [x] Combined what/why explanations with one concrete example per step.
 - [x] Existing concepts and examples preserved in Map, List, and lesson pages.
 - [x] Journey tab before Map and List, with existing map URLs preserved.

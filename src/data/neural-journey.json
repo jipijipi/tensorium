@@ -1,519 +1,239 @@
 [
   {
-    "id": "goal",
-    "title": "The goal",
-    "tone": "generate",
-    "question": "I want to generate text.",
-    "explanation": "Instead of writing a whole sentence at once, I can grow it one small piece at a time. I start with some text, add a piece, then repeat.",
+    "id": "memory",
+    "title": "A memory problem",
+    "tone": "context",
+    "question": "The last character hides the difference.",
+    "explanation": "Part One could finish cat, car, and can. Now we extend its training examples into three sentences. When the prompt ends in “is ”, the last character is a space in every case. Our tiny model looks up the same row and makes the same prediction, even though the earlier subject differs.",
     "example": [
       {
-        "label": "Start",
-        "value": "ca"
+        "label": "New example",
+        "value": "the cat is sleeping"
       },
       {
-        "label": "Add a character",
-        "value": "cat"
+        "label": "New example",
+        "value": "the car is moving"
       },
       {
-        "label": "Keep going",
-        "value": "cats…"
+        "label": "New example",
+        "value": "the can is empty"
       }
     ],
-    "caption": "This is an illustration of growing text, not output from a running model.",
-    "next": "To choose what to add, I need a way to guess what comes next."
+    "caption": "This is a new training collection, not knowledge contained in the original ten words. We still use character tokens. The experiment below counts real transitions from these three sentences.",
+    "next": "First, try giving the count model more memory."
   },
   {
-    "id": "predict",
-    "title": "The next guess",
+    "id": "longer-context",
+    "title": "Remember more",
+    "tone": "context",
+    "question": "Look up several previous characters instead of one.",
+    "explanation": "Instead of a row for “ ”, use a row for the last three characters, “is ”. That is still the same for all three prompts. Eight characters retain the subject and can distinguish “ cat is ”, “ car is ”, and “ can is ”. Move the context control below and watch which earlier characters remain visible.",
+    "example": [
+      {
+        "label": "One character",
+        "value": "“ ” → subject forgotten"
+      },
+      {
+        "label": "Three characters",
+        "value": "“is ” → still ambiguous"
+      },
+      {
+        "label": "Eight characters",
+        "value": "“ cat is ” → subject retained"
+      }
+    ],
+    "caption": "More context solves this distinction in the training collection. It does not automatically solve unfamiliar text.",
+    "next": "A longer lookup has a catch: what if that exact context never appeared?"
+  },
+  {
+    "id": "unseen",
+    "title": "Missing combinations",
     "tone": "predict",
-    "question": "I need to guess the next character.",
-    "explanation": "After “ca”, I might see “t”, “r”, or “n”. There is no single right answer for every situation. I need probabilities: numbers that say how likely each choice is.",
+    "question": "An exact lookup can have no answer.",
+    "explanation": "Choose “the cab is ” in the experiment. Its eight-character context was never observed, so there is no row to look up. A shorter context can provide a fallback, and adding small counts can avoid zero probabilities. Those are useful count-model improvements—but neither creates an understanding of the new subject.",
     "example": [
       {
-        "label": "Possible continuation",
-        "value": "cat"
+        "label": "Seen context",
+        "value": "“ cat is ” → observed continuation"
       },
       {
-        "label": "Another possibility",
-        "value": "car"
-      },
-      {
-        "label": "Another possibility",
-        "value": "can"
+        "label": "Unseen context",
+        "value": "“ cab is ” → no eight-character row"
       }
     ],
-    "caption": "The possibilities depend on the text the model has seen.",
-    "next": "First, I need to decide exactly what kind of piece I am predicting."
-  },
-  {
-    "id": "tokens",
-    "title": "Tokens",
-    "tone": "represent",
-    "question": "I need to split text into pieces.",
-    "explanation": "A token is one piece of text the model handles at a time. For our first model, each character is a token, including spaces. Larger language models often use pieces of words instead.",
-    "example": [
-      {
-        "label": "Text",
-        "value": "cat"
-      },
-      {
-        "label": "Our character tokens",
-        "value": "c  ·  a  ·  t"
-      }
-    ],
-    "caption": "Here, three characters make three tokens. We keep this rule for the rest of the journey.",
-    "next": "Now I need a consistent way to identify each token in my calculations."
-  },
-  {
-    "id": "represent",
-    "title": "Token IDs",
-    "tone": "represent",
-    "question": "I give each token a number.",
-    "explanation": "I make a vocabulary: a list of the tokens my model knows. Each gets a token ID, like a numbered seat. That lets me use it to look up counts and, later, learned numbers. The ID is a label, not a meaning or a score.",
-    "example": [
-      {
-        "label": "Vocabulary",
-        "value": "c = 0   a = 1   t = 2   r = 3   n = 4"
-      },
-      {
-        "label": "Encode “cat”",
-        "value": "[0, 1, 2]"
-      },
-      {
-        "label": "Decode those IDs",
-        "value": "cat"
-      }
-    ],
-    "caption": "We could renumber the vocabulary, as long as all our lookups stayed consistent.",
-    "next": "With tokens identified, I can count which ones tend to follow each other."
-  },
-  {
-    "id": "counts",
-    "title": "A working first model",
-    "tone": "predict",
-    "question": "Counts already let me complete “ca”.",
-    "explanation": "My tiny collection contains “cat” six times, “car” three times, and “can” once. After “a”, I count the next characters and divide by ten. I can now complete “ca” by choosing “t” 60% of the time, “r” 30%, and “n” 10%. No embeddings are needed for this model.",
-    "example": [
-      {
-        "label": "Our entire toy collection",
-        "value": "cat × 6   car × 3   can × 1"
-      },
-      {
-        "label": "After “a”",
-        "value": "t: 6   r: 3   n: 1"
-      },
-      {
-        "label": "Next-token probabilities",
-        "value": "t: 60%   r: 30%   n: 10%"
-      }
-    ],
-    "caption": "For this first exercise, we stop after completing the three-letter word. The count model only looks at the last character.",
-    "next": "This solves our tiny task. To move toward a larger neural model, I want to reuse what it learns instead of storing every transition independently."
-  },
-  {
-    "id": "scores",
-    "title": "Separate entries",
-    "tone": "predict",
-    "question": "A separate entry for every pair gets expensive.",
-    "explanation": "A direct table can store one adjustable score for every input token and possible next token. A score says how much to favor that output; it is not yet a probability. Our five tokens need only 5 × 5 = 25 entries. With 10,000 tokens, that becomes 100 million. Can I build scores from fewer, shared ingredients?",
-    "example": [
-      {
-        "label": "Our vocabulary",
-        "value": "c, a, t, r, n"
-      },
-      {
-        "label": "Direct table",
-        "value": "5 inputs × 5 outputs = 25 scores"
-      },
-      {
-        "label": "The row we care about now",
-        "value": "input “a” → scores for t, r, n"
-      }
-    ],
-    "caption": "This is a reason to explore a different representation, not a claim that our five-token problem needs compression. A table of counts remains a valid solution.",
-    "next": "I will try making each row from a small number of reusable scoring patterns."
-  },
-  {
-    "id": "weights",
-    "title": "Reusable patterns",
-    "tone": "learn",
-    "question": "A weight controls one contribution.",
-    "explanation": "Suppose I use two shared patterns of output scores. Pattern A favors “t”; pattern B favors “n”. I can multiply each pattern by a number, called a weight, to control its contribution. For the input “a”, I will try 0.75 of A and 0.25 of B.",
-    "example": [
-      {
-        "label": "Output order",
-        "value": "[t, r, n]"
-      },
-      {
-        "label": "Shared pattern A",
-        "value": "[2, 1, 0]"
-      },
-      {
-        "label": "Shared pattern B",
-        "value": "[0, 1, 2]"
-      },
-      {
-        "label": "Settings for input “a”",
-        "value": "A × 0.75   B × 0.25"
-      }
-    ],
-    "caption": "These patterns and settings are invented to explain the calculation. They are not probabilities and have not been fitted to our counts. We show three output columns; a complete model also has columns for c and a.",
-    "next": "I need to keep those two settings together, in a fixed order."
-  },
-  {
-    "id": "vectors",
-    "title": "Keep the settings together",
-    "tone": "represent",
-    "question": "The vector holds the recipe for a prediction.",
-    "explanation": "For “a”, I store [0.75, 0.25]: first the amount of pattern A, then the amount of pattern B. This ordered list is a vector. Its job here is precise: it tells the shared calculation how much of each pattern to use. It is not just a new number identifying “a”.",
-    "example": [
-      {
-        "label": "Fixed order",
-        "value": "[amount of A, amount of B]"
-      },
-      {
-        "label": "Settings for “a”",
-        "value": "[0.75, 0.25]"
-      },
-      {
-        "label": "What they control",
-        "value": "mostly A, with some B"
-      }
-    ],
-    "caption": "A vector is simply an ordered list. Here its entries control contributions to scores; unlike probabilities, such settings may be negative and need not sum to one.",
-    "next": "Why not use just one setting? Because I want to adjust the two patterns independently."
-  },
-  {
-    "id": "dimensions",
-    "title": "Independent settings",
-    "tone": "represent",
-    "question": "Two entries let the recipe change in two ways.",
-    "explanation": "With only one multiplier on pattern A, I could make its scores bigger or smaller, but could not turn it into pattern B. Two independent settings let me move between these patterns and combine them. Each setting is a dimension of the vector.",
-    "example": [
-      {
-        "label": "Only A: [1, 0]",
-        "value": "scores [2, 1, 0] → favors t"
-      },
-      {
-        "label": "Only B: [0, 1]",
-        "value": "scores [0, 1, 2] → favors n"
-      },
-      {
-        "label": "Equal mix: [0.5, 0.5]",
-        "value": "scores [1, 1, 1] → equal preference"
-      }
-    ],
-    "caption": "Two settings still cannot produce every possible score row. This smaller model trades flexibility for shared structure. More dimensions allow more patterns.",
-    "next": "Different input tokens need different recipes. I will keep their vectors in a table."
-  },
-  {
-    "id": "embeddings",
-    "title": "Look up the recipe",
-    "tone": "represent",
-    "question": "An embedding is the recipe stored for a token.",
-    "explanation": "I give every input token its own vector of settings. This lookup table is the embedding table. The ID of “a” selects its row, [0.75, 0.25]. Every prediction that uses “a” can reuse that same row. Training will adjust the rows and the shared scoring patterns together.",
-    "example": [
-      {
-        "label": "Input token",
-        "value": "a → ID 1"
-      },
-      {
-        "label": "Row 1: the embedding of “a”",
-        "value": "[0.75, 0.25]"
-      },
-      {
-        "label": "Use that row",
-        "value": "0.75 × pattern A + 0.25 × pattern B"
-      }
-    ],
-    "caption": "The ID finds the recipe; the embedding contains its adjustable settings. Real embedding dimensions are not assigned labels like “catness” by hand. Our A/B patterns only make their computational role visible.",
-    "next": "This changes how many numbers we store: a short recipe per token, plus shared patterns for turning recipes into scores."
+    "caption": "An unseen row is different from a low-probability outcome in an existing row. Neural models can also fail on unfamiliar inputs; they do not create missing knowledge for free.",
+    "next": "Can we reuse pieces of what we learned, rather than demand a separate row for every full context?"
   },
   {
     "id": "sharing",
-    "title": "What this buys us",
+    "title": "Share a calculation",
     "tone": "represent",
-    "question": "Reuse calculations instead of learning every pair separately.",
-    "explanation": "For our five-token vocabulary, a two-entry embedding for each input needs 10 numbers. Two shared patterns across five possible outputs need another 10. That is 20 numbers instead of 25 independent scores. Updating a shared pattern affects every input that uses it, so training examples can influence a common calculation.",
+    "question": "Separate rows cannot share what they learn.",
+    "explanation": "Longer contexts create many possible combinations. A counting table stores the observed combinations separately. A neural model instead uses a shared calculation whose adjustable numbers are reused for many inputs. This can help generalization; it is a different approach, not a requirement for our original tiny task.",
     "example": [
       {
-        "label": "Direct score table",
-        "value": "5 × 5 = 25 numbers"
+        "label": "Count approach",
+        "value": "exact context → its own count row"
       },
       {
-        "label": "Embeddings + shared output patterns",
-        "value": "5 × 2 + 2 × 5 = 20 numbers"
+        "label": "Learned approach",
+        "value": "input representation → shared calculation → scores"
       }
     ],
-    "caption": "The saving is small here and larger for bigger vocabularies with short vectors. Fewer numbers do not guarantee better predictions; a two-pattern model cannot match every possible table. A transformer adds further calculations on these vectors.",
-    "next": "Now let’s actually use the embedding of “a” to calculate the three scores for completing “ca”."
+    "caption": "With V tokens there are Vᵏ possible contexts of length k. A sparse table stores only observed ones, but then many combinations remain missing.",
+    "next": "A shared calculation needs an input representation with adjustable values, rather than just an arbitrary token label."
   },
   {
-    "id": "weighted-sum",
-    "title": "Make one score",
+    "id": "recipe",
+    "title": "Vectors & embeddings",
+    "tone": "represent",
+    "question": "Store a small recipe for each token.",
+    "explanation": "Give every character an ID to locate it in a table. Its row contains several adjustable numbers: a vector. When that row represents a token, it is called an embedding. The entries tell later calculations how strongly to use different shared patterns. The ID finds the row; the embedding supplies values to calculate with.",
+    "example": [
+      {
+        "label": "Token ID",
+        "value": "a → row 1"
+      },
+      {
+        "label": "Embedding stored in row 1",
+        "value": "[0.75, 0.25]"
+      },
+      {
+        "label": "Meaning in our toy calculation",
+        "value": "amount of pattern A; amount of pattern B"
+      }
+    ],
+    "caption": "A and B below are deliberately simple scoring patterns. In a real model their meanings are not hand-assigned; embeddings and shared calculations learn together. These entries are not probabilities.",
+    "next": "Let’s make the recipe do something visible, using the same t/r/n choices from Part One."
+  },
+  {
+    "id": "weights",
+    "title": "From recipe to scores",
     "tone": "learn",
-    "question": "Follow the recipe for “t”.",
-    "explanation": "The embedding of “a” is [0.75, 0.25]. In the “t” column, pattern A contains 2 and pattern B contains 0. Multiply each setting by its matching pattern value, then add. The result is the score for “t”. This multiply-and-add operation is a weighted sum.",
+    "question": "A weight multiplies a contribution.",
+    "explanation": "A weight is an adjustable multiplier: 2 doubles a number, 0 removes its contribution, and a negative value reverses its sign. Use the embedding [0.75, 0.25] to multiply two shared patterns, then add. This gives a score for each possible next character. Higher scores express stronger preference, not percentages.",
     "example": [
       {
-        "label": "Contribution from A",
-        "value": "0.75 × 2 = 1.5"
+        "label": "Shared pattern A, for [t, r, n]",
+        "value": "[2, 1, 0]"
       },
       {
-        "label": "Contribution from B",
-        "value": "0.25 × 0 = 0"
+        "label": "Shared pattern B, for [t, r, n]",
+        "value": "[0, 1, 2]"
       },
       {
-        "label": "Score for “t”",
-        "value": "1.5 + 0 = 1.5"
+        "label": "Apply the recipe",
+        "value": "0.75 × A + 0.25 × B = [1.5, 1.0, 0.5]"
       }
     ],
-    "caption": "The output values 2 and 0 are adjustable weights too. “Weight” means a multiplier in the calculation, not confidence or probability.",
-    "next": "Repeat the same calculation for “r” and “n”, using their columns in the same shared patterns."
+    "caption": "This is a toy output calculation, not a trained sentence model. A full model scores every token in its vocabulary. Grouping these multiply-and-add calculations into a table is matrix multiplication.",
+    "next": "These predictions only become useful when the recipe and patterns are adjusted using real examples."
   },
   {
-    "id": "output-scores",
-    "title": "Make all scores",
-    "tone": "predict",
-    "question": "One recipe produces all three scores.",
-    "explanation": "Keep the embedding [0.75, 0.25] fixed. Only the output column changes. This produces a list of scores for “t”, “r”, and “n”. The shared pattern table is a matrix; matrix multiplication carries out these weighted sums together.",
+    "id": "training",
+    "title": "Learn the numbers",
+    "tone": "learn",
+    "question": "Replace invented settings with practice.",
+    "explanation": "Softmax converts scores into probabilities. Loss measures how little probability the model assigned to the observed next token. Gradients tell us how a small change to each adjustable number would affect that loss; backpropagation computes them through the calculation. An optimizer then takes a small update step. Repeat this across examples to train the embeddings and weights together.",
     "example": [
       {
-        "label": "“t”: column [2, 0]",
-        "value": "0.75 × 2 + 0.25 × 0 = 1.5"
-      },
-      {
-        "label": "“r”: column [1, 1]",
-        "value": "0.75 × 1 + 0.25 × 1 = 1.0"
-      },
-      {
-        "label": "“n”: column [0, 2]",
-        "value": "0.75 × 0 + 0.25 × 2 = 0.5"
-      },
-      {
-        "label": "Scores for [t, r, n]",
+        "label": "Our invented scores",
         "value": "[1.5, 1.0, 0.5]"
-      }
-    ],
-    "caption": "The embedding represents the input “a”. This new vector represents output scores. Both are lists, but their positions have different jobs.",
-    "next": "To choose a character, I need probabilities rather than raw scores."
-  },
-  {
-    "id": "probabilities",
-    "title": "Scores to chances",
-    "tone": "predict",
-    "question": "Convert the scores into chances of being chosen.",
-    "explanation": "Softmax turns scores into positive probabilities that add up to one. It gives higher scores a larger share. Applied to our three scores, it produces about 50.6% for “t”, 30.7% for “r”, and 18.6% for “n”. That is a prediction for the same “ca” we started with.",
-    "example": [
-      {
-        "label": "Calculated scores",
-        "value": "t: 1.5   r: 1.0   n: 0.5"
       },
       {
         "label": "Softmax probabilities, rounded",
-        "value": "t: 50.6%   r: 30.7%   n: 18.6%"
+        "value": "[50.6%, 30.7%, 18.6%]"
       },
       {
-        "label": "Observed proportions in our text",
-        "value": "t: 60%   r: 30%   n: 10%"
+        "label": "Original observed proportions",
+        "value": "[60%, 30%, 10%]"
       }
     ],
-    "caption": "The rounding makes the displayed percentages total 99.9%. Softmax exponentiates each score, then divides by the sum. This demonstration considers only t/r/n; a full vocabulary distribution includes c/a too.",
-    "next": "Our invented settings do not match the observed proportions yet. Training is how we make them more useful."
-  },
-  {
-    "id": "learn",
-    "title": "Practice examples",
-    "tone": "learn",
-    "question": "The text supplies the answer to practice with.",
-    "explanation": "I present “cat”, “car”, and “can” with their observed frequencies: six, three, and one. For each example, I give the model “ca” and ask it to predict the final token. The real final token supplies the answer for that training example.",
-    "example": [
-      {
-        "label": "Training text",
-        "value": "cat"
-      },
-      {
-        "label": "Give the model",
-        "value": "ca"
-      },
-      {
-        "label": "Actual next token",
-        "value": "t"
-      }
-    ],
-    "caption": "Our simple neural model currently uses the final input token “a”. Many examples teach it a distribution, rather than a rule that always chooses “t”.",
-    "next": "I need a single number that says how poorly this prediction matched the observed token."
-  },
-  {
-    "id": "loss",
-    "title": "Measure the mistake",
-    "tone": "learn",
-    "question": "Loss measures how much improvement is needed.",
-    "explanation": "For next-token prediction, the loss gets smaller when the model assigns more probability to the token that actually occurred. Being very confident in a wrong answer gives a large loss. Combining losses across many examples gives training something concrete to reduce.",
-    "example": [
-      {
-        "label": "Actual token",
-        "value": "t"
-      },
-      {
-        "label": "Probability assigned to “t”",
-        "value": "10% → larger loss"
-      },
-      {
-        "label": "Probability assigned to “t”",
-        "value": "80% → smaller loss"
-      }
-    ],
-    "caption": "The usual calculation is negative log probability. You do not need that formula to see the aim: increase probability for the observed outcomes across the training examples.",
-    "next": "The loss tells me how bad the prediction was. It does not yet tell me which number to change."
-  },
-  {
-    "id": "gradients",
-    "title": "Find a direction",
-    "tone": "learn",
-    "question": "Ask what a small change would do.",
-    "explanation": "For each adjustable number, I need to know whether increasing it slightly would raise or lower the loss. A derivative describes this local effect. Collecting these derivatives gives a gradient. Backpropagation calculates them by tracing how the loss depends on the earlier calculations.",
-    "example": [
-      {
-        "label": "Positive derivative",
-        "value": "A small increase would raise loss."
-      },
-      {
-        "label": "Negative derivative",
-        "value": "A small increase would lower loss."
-      }
-    ],
-    "caption": "These are local directions, not promises about a large change. We can let an automatic differentiation tool calculate them.",
-    "next": "Now I can take a small step in a direction that should reduce the loss."
-  },
-  {
-    "id": "updates",
-    "title": "Small updates",
-    "tone": "learn",
-    "question": "Change the numbers a little, then try again.",
-    "explanation": "An optimizer uses the gradients to update embeddings and weights. In simple gradient descent, I subtract a small multiple of each derivative from its corresponding number. The learning rate controls how big that step is. Then I make new predictions and repeat.",
-    "example": [
-      {
-        "label": "Current adjustable number",
-        "value": "0.75"
-      },
-      {
-        "label": "Suppose its derivative is 0.2; step size 0.1",
-        "value": "change = −0.1 × 0.2 = −0.02"
-      },
-      {
-        "label": "Updated number",
-        "value": "0.73"
-      }
-    ],
-    "caption": "This derivative is hypothetical, not computed from the earlier example. Training adjusts embeddings and shared output weights together. Large steps can make things worse.",
-    "next": "Our model can now learn next-character patterns. Longer text creates another problem: the most recent character alone is not enough."
-  },
-  {
-    "id": "context",
-    "title": "Longer context",
-    "tone": "context",
-    "question": "What if “cat”, “car”, and “can” appear in sentences?",
-    "explanation": "Now imagine extending the training text with sentences: “the cat is sleeping”, “the car is moving”, and “the can is empty”. All three prefixes end in “is ”. A last-character model sees only the same space and must give the same prediction. Even the last word is identical. I need information from earlier tokens to distinguish the prefixes.",
-    "example": [
-      {
-        "label": "Prefix A",
-        "value": "the cat is …"
-      },
-      {
-        "label": "Prefix B",
-        "value": "the car is …"
-      },
-      {
-        "label": "Prefix C",
-        "value": "the can is …"
-      }
-    ],
-    "caption": "These sentences extend our original toy collection. They illustrate why context matters; the original three-word collection could not teach these continuations.",
-    "next": "The token embeddings give me vectors for the characters. I now need to preserve their order and combine information from earlier positions."
+    "caption": "The numbers above illustrate the starting mismatch; this page does not run neural training. Softmax uses exponentials and normalization. Repeated examples guide the probabilities; no single update is guaranteed to improve every example.",
+    "next": "Token embeddings can now be useful inputs. For longer text, we still need to preserve order and combine context."
   },
   {
     "id": "positions",
-    "title": "Keep the order",
+    "title": "Preserve order",
     "tone": "context",
-    "question": "The same tokens can occur in a different order.",
-    "explanation": "Even “cat” and “act” contain the same three characters. Their token embeddings are the same rows, arranged differently. Position information tells the context calculation which came first, second, and third.",
+    "question": "A bag of token vectors loses the sentence.",
+    "explanation": "The words cat and act contain the same characters. Looking up their embeddings gives the same three rows in different orders. If we simply add the rows, the result is identical. Position information lets later calculations distinguish where each token occurred.",
     "example": [
       {
         "label": "cat",
-        "value": "1: c   2: a   3: t"
+        "value": "c at 1 · a at 2 · t at 3"
       },
       {
         "label": "act",
-        "value": "1: a   2: c   3: t"
+        "value": "a at 1 · c at 2 · t at 3"
       }
     ],
-    "caption": "This rearrangement illustrates order, not a new training dataset. A model that simply added all token vectors would lose this distinction.",
-    "next": "Attention lets the current position take different amounts of information from earlier positions."
+    "caption": "There are several ways to supply position information. The purpose is to distinguish order; it does not by itself decide which information matters.",
+    "next": "Now the model can combine information from different positions without treating every position identically."
   },
   {
     "id": "attention",
-    "title": "Attention",
+    "title": "Use relevant context",
     "tone": "context",
-    "question": "Mix information in different proportions.",
-    "explanation": "To complete “the cat is ”, the model can combine information from the earlier characters instead of using only the final space. Attention calculates how much each available position contributes, then mixes their vectors. These mixing shares change with the input. They are calculated using learned comparisons, rather than stored as one fixed recipe for every sentence.",
+    "question": "Calculate a different mixture for each context.",
+    "explanation": "Attention compares the current representation with available positions and turns comparison scores into mixing shares. It combines their information using those shares. Unlike a fixed lookup row, this mixture depends on the input. To complete “the cat is ”, the model can use information from the earlier subject as well as the final space.",
     "example": [
       {
-        "label": "Two illustrative transformed vectors from earlier positions",
-        "value": "[1, 0] and [0, 1]"
+        "label": "Context available",
+        "value": "the cat is "
       },
       {
-        "label": "Suppose attention assigns these shares",
-        "value": "25% and 75%"
-      },
-      {
-        "label": "The mixture",
-        "value": "0.25 × [1, 0] + 0.75 × [0, 1]\n= [0.25, 0.75]"
+        "label": "Attention operation",
+        "value": "compare → assign shares → combine vectors"
       }
     ],
-    "caption": "These vectors and shares are invented to show the mixing operation, not learned results for our sentences. During training, future positions are hidden so the model cannot read the answer ahead.",
-    "next": "The resulting vector now depends on the context. Later calculations turn it into output scores and probabilities, just as before. These added calculations must also be trained on suitable text."
+    "caption": "The diagram uses invented shares and simplified vectors, not learned explanations for the sentence. Future positions must be masked during training so the model cannot read the answer ahead. Attention alone is not a complete transformer.",
+    "next": "The context-dependent result feeds later transformations and the output-score calculation."
   },
   {
-    "id": "unseen-text",
-    "title": "Try new text",
-    "tone": "learn",
-    "question": "Good practice scores are not enough.",
-    "explanation": "A low loss on our ten familiar words only tells me the model fits those examples. To see whether it learned useful patterns, I need a larger collection and some text kept out of training. I compare its predictions with the actual next tokens there too.",
+    "id": "transformer",
+    "title": "Put the pieces together",
+    "tone": "context",
+    "question": "Attention needs a surrounding prediction model.",
+    "explanation": "A small decoder-only transformer combines token representations and position information with causal attention and a feedforward network. The feedforward network applies learned transformations and a nonlinear rule, allowing more than one linear remix. Residual connections carry an earlier representation forward; normalization helps control numerical scales. These blocks produce a vector used to score next tokens.",
     "example": [
       {
-        "label": "Training text",
-        "value": "Used to adjust the numbers."
+        "label": "Input",
+        "value": "character IDs → embeddings + position information"
       },
       {
-        "label": "Validation text",
-        "value": "Used to check progress, not to compute training updates."
+        "label": "Transformer block",
+        "value": "causal attention → feedforward transformation"
+      },
+      {
+        "label": "Output",
+        "value": "context vector → scores → probabilities"
       }
     ],
-    "caption": "For a final evaluation, keep another test set untouched while choosing the model and settings.",
-    "next": "Once I am ready to generate, I keep the learned numbers fixed."
+    "caption": "This is the assembly map, not a full implementation tutorial. Residual connections and normalization belong around the block operations. Every added component must be trained; adding it does not automatically improve quality.",
+    "next": "Once trained, generation is still the same loop you already understand."
   },
   {
-    "id": "generate",
-    "title": "Generate",
+    "id": "return-loop",
+    "title": "The same generation loop",
     "tone": "generate",
-    "question": "I choose a token, then do it again.",
-    "explanation": "The trained model gives me probabilities for the next token. I sample one: a more likely token has a greater chance of being chosen. I add it to the text and predict again using the updated context. Repeating this loop generates text.",
+    "question": "Only the prediction machinery has changed.",
+    "explanation": "Part One looked up a count row. The neural version calculates probabilities from a learned representation of the context. Both choose a token, append it, and repeat until END or a length limit. During generation, the learned weights stay fixed. Evaluate on held-out text to check whether the extra machinery actually helped.",
     "example": [
       {
-        "label": "Context",
-        "value": "ca"
+        "label": "Part One",
+        "value": "previous token → count row → probabilities"
       },
       {
-        "label": "Suppose I sample “t”",
-        "value": "cat"
+        "label": "Neural model",
+        "value": "available context → learned calculation → probabilities"
       },
       {
-        "label": "Next step",
-        "value": "use “cat” to guess again"
+        "label": "Both",
+        "value": "sample → append → repeat → stop"
       }
     ],
-    "caption": "The text changes during generation; the trained weights stay fixed. A small model may produce nonsense—it has learned patterns, not guaranteed facts.",
-    "next": "The loop is complete: identify tokens, look up vectors, combine them using weights and context, predict probabilities, and sample the next token. Practice improves the numbers behind those calculations."
+    "caption": "The neural model can still generate incorrect or meaningless text. More context and shared representations offer capacity; sufficient data, training, and evaluation determine whether that capacity is useful.",
+    "next": "Return to the tiny model whenever you want to see the complete generation loop without the extra machinery."
   }
 ]

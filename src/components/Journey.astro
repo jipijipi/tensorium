@@ -1,6 +1,8 @@
 ---
 import defaultStages from '../data/journey.json';
 import TinyModel from './TinyModel.astro';
+import ContextExperiment from './ContextExperiment.astro';
+import NeuralVisual from './NeuralVisual.astro';
 interface Props { stages?: typeof defaultStages; neural?: boolean }
 const { stages = defaultStages, neural = false } = Astro.props;
 import ConceptText from './ConceptText.astro';
@@ -9,8 +11,8 @@ import JourneyExample from './JourneyExample.astro';
 <div id="journey-view">
   <header class="journey-intro">
     <p class="eyebrow">{neural ? 'Part two · beyond counting' : 'Part one · a model you can see working'}</p>
-    <h2>{neural ? 'Why use a more capable model?' : 'Ten examples. One tiny language model.'}</h2>
-    <p>{neural ? 'Explore learned representations after understanding the complete counting model.' : 'Count what follows each character, turn counts into chances, and generate a word. No vectors or embeddings needed yet.'}</p>
+    <h2>{neural ? 'Keep the loop. Improve the prediction.' : 'Ten examples. One tiny language model.'}</h2>
+    <p>{neural ? 'The tiny model works. Now change the task, expose its limits, and see which new idea helps with each problem.' : 'Count what follows each character, turn counts into chances, and generate a word. No vectors or embeddings needed yet.'}</p>
   </header>
   <ol class="journey-overview simple-overview" aria-label="The path from text to a language model">
     {stages.map((stage, i) => <li data-tone={stage.tone}><a href={`#journey-${stage.id}`}><span class="journey-number">{String(i + 1).padStart(2, '0')}</span><strong>{stage.title}</strong></a></li>)}
@@ -20,10 +22,11 @@ import JourneyExample from './JourneyExample.astro';
       <header class="simple-stage-heading"><span class="journey-number">{String(i + 1).padStart(2, '0')}</span><h3>{stage.question}</h3></header>
       <div class="journey-body">
         <p class="journey-explanation"><ConceptText text={stage.explanation} /></p>
-        <figure class="journey-example"><JourneyExample rows={stage.example} /><figcaption>{stage.caption}</figcaption></figure>
+        <figure class="journey-example">{neural && <NeuralVisual id={stage.id} />}<JourneyExample rows={stage.example} /><figcaption>{stage.caption}</figcaption></figure>
         <p class="journey-bridge">{i < stages.length - 1 && <span aria-hidden="true">↓ </span>}{stage.next}</p>
       </div>
     {stage.id === 'generate' && !neural && <TinyModel />}
+    {stage.id === 'longer-context' && neural && <ContextExperiment />}
     </article>)}
   </div>
   <div class="journey-end">{neural ? <a class="text-link" href="/?view=journey#tiny-model">← Return to the working tiny model</a> : <><p>You now have a complete model: examples → counts → probabilities → generated text.</p><a class="text-link" href="/journey/neural/">Part two: why go beyond counting? →</a></>}</div>

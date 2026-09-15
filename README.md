@@ -9,7 +9,7 @@ An early, working learning atlas with 22 introductory lessons across 16 subject 
 - A Journey / Map / List switch. Journey is the default for new visits; existing concept links still open the map.
 - A seven-step tiny-model journey: examples, boundaries, pair counts, probabilities, sampling, generation, and limitations.
 - A working cat/car/can experiment with editable frequencies, a live count table, token-by-token generation, and an explicit END marker.
-- The earlier neural-model journey preserved as a separate Part Two.
+- Part Two continues from observed limitations: a live context-length experiment, unseen contexts, shared representations, and visual explanations of the neural prediction path.
 - One short explanation and concrete example per step, with a linked overview and semantic color highlights.
 - A branching prerequisite explorer.
 - Four starting concepts with no earlier lesson: vectors, functions, probability, and graphs.
@@ -65,7 +65,7 @@ public/                   Static assets
 
 `src/data/journey.json` defines the seven-step counting-model introduction. `src/components/TinyModel.astro` exposes the full training table and generation trace. `src/lib/tiny-model.ts` implements counting and sampling; `npm test` checks normalization, boundaries, stopping, and invalid input handling. Input counts are whole numbers from 0 to 100; an empty collection disables generation. Sampling uses browser randomness and does not promise exact proportions in small runs.
 
-The full first journey stays on the homepage. The existing neural explanation is preserved in `src/data/neural-journey.json` at `/journey/neural/`. The 22 concept lessons remain in Map and List. With JavaScript disabled, the lesson and initial count table remain readable.
+The full first journey stays on the homepage. Part Two lives in `src/data/neural-journey.json` at `/journey/neural/`. It follows 11 problem-led steps and includes `ContextExperiment.astro`: real character counts from three explicitly introduced sentences, with 1/3/8-character memory and an unseen-context option. `NeuralVisual.astro` adds static diagrams for embedding lookup, weighted sums, probability comparisons, positions, attention mixtures, and the transformer block. Neural values are illustrative; there is no live neural training. The 22 concept lessons remain in Map and List. With JavaScript disabled, the lesson and initial count table remain readable.
 
 ## Add a concept
 

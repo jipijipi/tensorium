@@ -628,3 +628,50 @@ summary { cursor: pointer; min-height: 48px; align-content: center; color: var(-
 #tiny-trace { padding-left: 20px; font: 12px/1.9 var(--mono); }
 #tiny-trace li { margin-bottom: 10px; }
 @media(max-width:600px) { .tiny-lab { margin-left: 0; padding: 18px; } .tiny-controls { gap: 16px; } .tiny-table th,.tiny-table td { padding: 8px 4px; } }
+/* Part two: reveal the limitation, then the mechanism. */
+.neural-visual { margin: 0 0 26px; padding: 0 0 24px; border-bottom: 1px solid var(--line); }
+.neural-visual .visual-label, .context-lab .visual-label { font: 10px/1.7 var(--mono); text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
+.recipe-visual { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
+.recipe-visual > div > strong { display: block; font: 32px var(--mono); margin-top: 10px; }
+.recipe-visual .visual-label { display: block; }
+.vector-cells { display: flex; gap: 4px; margin-top: 10px; }
+.vector-cells b { background: #f2ecf8; color: #7043a0; padding: 12px; font: 23px var(--mono); }
+.vector-cells small { display: block; font-size: 10px; margin-top: 8px; }
+.pattern-table { border-collapse: collapse; width: 100%; font: 13px/1.7 var(--mono); text-align: left; }
+.pattern-table caption { text-align: left; margin-bottom: 16px; }
+.pattern-table td,.pattern-table th { border-bottom: 1px solid var(--line); padding: 12px 8px; }
+.pattern-table th { font-size: 11px; font-weight: 500; }
+.score-total { background: #fbefe4; color: #9a4b19; }
+.probability-pair { display: grid; grid-template-columns: 20px 1fr; gap: 14px; margin: 18px 0; }
+.comparison-bar { display: block; padding: 5px 8px; font: 11px/1.6 var(--mono); background: linear-gradient(to right,var(--bar-color) var(--chance),transparent var(--chance)); }
+.predicted { --bar-color:#eaf1fb; color:#285ca1; }.observed { --bar-color:#ebf3e7; color:#35682c; }
+.order-comparison > div { display: flex; gap: 12px; margin-bottom: 14px; }
+.position-cell { flex: 1; padding: 10px; background:#e6f3f1; color:#17696b; }
+.position-cell small { display: block; font: 10px var(--mono); }
+.position-cell b { font: 28px var(--mono); }
+.attention-mixture { display:flex; flex-wrap:wrap; align-items:center; gap:16px; }
+.attention-mixture span { display:grid; gap:8px; padding:12px; background:#e6f3f1; color:#17696b; font-size:13px; }
+.causal-strip { display:flex; flex-wrap:wrap; gap:12px; font-size:12px; }
+.causal-strip span:last-child { border-left:1px dashed var(--muted); padding-left:12px; }
+.model-flow { display:flex; flex-direction:column; align-items:center; gap:10px; font-size:13px; text-align:center; }
+.model-flow i { font-style:normal; color:var(--muted); }
+.block-outline { display:flex; flex-direction:column; gap:10px; padding:18px 30px; border:1px solid #17696b; background:#e6f3f1; }
+.block-outline small { color:var(--muted); }
+.converging-flow { text-align:center; font-size:14px; }
+.converging-flow > div { display:flex; justify-content:space-around; gap:12px; }
+.converging-flow > div span { padding:12px; border:1px solid var(--line); }
+.converging-flow strong { color:var(--accent); font-weight:500; }
+.context-lab { margin:0 0 35px 36px; max-width:744px; padding:24px; border:1px solid var(--line); border-top:2px solid #17696b; }
+.context-lab h4 { font-size:22px; font-weight:500; margin:0 0 12px; letter-spacing:-.5px; }
+.context-lab > p { font-size:13px; line-height:1.7; }
+.context-controls { display:flex; flex-wrap:wrap; gap:20px; margin:22px 0; }
+.context-controls label { display:grid; gap:8px; font-size:12px; }
+.context-controls select { min-height:48px; max-width:100%; padding:8px; background:var(--paper); border:1px solid var(--line); color:var(--ink); font:14px var(--mono); }
+.context-controls select:focus-visible { outline:2px solid var(--accent); }
+.context-lab .context-preview { font:clamp(16px,3vw,25px)/1.6 var(--mono); overflow-wrap:anywhere; }
+#context-forgotten { color:var(--muted); text-decoration:line-through; }
+#context-kept { background:#e6f3f1; color:#17696b; }
+#context-result { font-size:13px; line-height:1.7; margin-top:22px; }
+.context-result-row { display:grid; grid-template-columns:35px 1fr 110px; gap:12px; align-items:center; margin:12px 0; }
+.chance-bar { height:12px; background:linear-gradient(to right,#17696b var(--chance),#e6f3f1 var(--chance)); }
+@media(max-width:600px) { .context-lab { margin-left:0; padding:18px; }.context-result-row { grid-template-columns:25px 1fr 90px;gap:8px; }.pattern-table td,.pattern-table th { padding:8px 4px; } }
