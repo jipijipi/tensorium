@@ -1,6 +1,6 @@
 # Design principles
 
-Tensorium should feel like a precise reading tool. The concept is the focal point.
+TensorAtlas should feel like a precise reading tool. The concept is the focal point.
 
 ## Visual language
 

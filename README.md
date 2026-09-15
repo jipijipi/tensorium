@@ -1,4 +1,4 @@
-# Tensorium
+# TensorAtlas
 
 A mobile-first visual atlas of machine learning. Clear explanations, useful diagrams, and eventually interactive experiments that connect intuition to mathematics.
 
@@ -39,7 +39,27 @@ npm run build    # Generate static files in dist/
 npm run preview  # Inspect the production build locally
 ```
 
-Deploy the generated `dist/` directory to a static host. No application server or database is required. Hosting and deployment automation are not configured yet; subdirectory hosting will require base-path configuration.
+## Publish at tensoratlas.org
+
+The site is configured for `https://tensoratlas.org`. No application server or database is required. The repository can retain its `tensorium` name.
+
+1. In the repository's Settings → Pages, choose **GitHub Actions** as the source and save **tensoratlas.org** as the custom domain before changing DNS.
+2. At your DNS provider, configure these records (replace conflicting parking records for these names):
+
+   | Type | Name | Value |
+   | --- | --- | --- |
+   | A | @ | 185.199.108.153 |
+   | A | @ | 185.199.109.153 |
+   | A | @ | 185.199.110.153 |
+   | A | @ | 185.199.111.153 |
+   | CNAME | www | jipijipi.github.io |
+
+3. Push these changes to `main`. `.github/workflows/deploy.yml` checks, builds, and deploys the site on each push. You can also run it manually from Actions.
+4. Once GitHub's DNS check and certificate provisioning finish, enable **Enforce HTTPS** in Pages settings. DNS and certificate availability can take up to 24 hours.
+
+The custom domain serves the site at `/`, so no repository base path is configured. GitHub Actions deployments use the custom domain saved in Pages settings; a repository `CNAME` file is not required.
+
+See [Astro's deployment guide](https://docs.astro.build/en/guides/deploy/github/) and [GitHub's domain setup guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
 
 ## Technical foundation
 

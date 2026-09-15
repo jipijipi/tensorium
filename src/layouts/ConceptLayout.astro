@@ -8,7 +8,7 @@ const concept = concepts.find(c => c.id === id);
 const before = concepts.filter(c => concept?.prerequisites.includes(c.id));
 const after = concepts.filter(c => c.prerequisites.includes(id ?? ''));
 ---
-<BaseLayout title={`${frontmatter.title} — Tensorium`} description={frontmatter.description}>
+<BaseLayout title={`${frontmatter.title} — TensorAtlas`} description={frontmatter.description}>
   <article class="concept-page">
     <a class="back-link" href={`/?concept=${id}#concepts`}>← Back to the map</a>
     <header class="concept-heading">

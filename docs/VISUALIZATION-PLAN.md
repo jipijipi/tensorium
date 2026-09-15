@@ -1,6 +1,6 @@
 # Visualization feasibility
 
-Assessment of all 22 current concepts, dated 2026-09-15. These are design and engineering judgments for Tensorium’s introductory lessons, not estimates for implementing full research systems.
+Assessment of all 22 current concepts, dated 2026-09-15. These are design and engineering judgments for TensorAtlas’s introductory lessons, not estimates for implementing full research systems.
 
 ## Scope and rating scale
 
