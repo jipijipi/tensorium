@@ -7,9 +7,8 @@ A mobile-first visual atlas of machine learning. Clear explanations, useful diag
 An early, working learning atlas with 22 introductory lessons across 16 subject groups.
 
 - A Journey / Map / List switch. Journey is the default for new visits; existing concept links still open the map.
-- A five-stage language-model journey: Predict → Represent → Learn → Use context → Generate.
-- Semantic color highlights and typographic examples connect prediction, representations, learning, context, and generation.
-- An overview of the whole journey, with expandable what/why explanations, examples, checkpoints, and supporting concepts on the same page.
+- A continuous ten-step language-model journey, from generating text through tokens, IDs, counts, vectors, embeddings, context, learning, and generation.
+- One short explanation and concrete example per step, with a linked overview and semantic color highlights.
 - A branching prerequisite explorer.
 - Four starting concepts with no earlier lesson: vectors, functions, probability, and graphs.
 - A focused view of each concept’s prerequisites and next steps; branching connections on desktop and vertical progression on narrow screens.
@@ -62,9 +61,9 @@ public/                   Static assets
 
 ## Journey content
 
-`src/data/journey.json` defines the five stages and references supporting concept IDs. `Journey.astro` renders the overview and native expandable lessons, reusing existing concept text and examples. The path explains a future tiny character-level transformer build; it does not yet include executable model training.
+`src/data/journey.json` defines ten beginner steps, each with an explanation, labelled example rows, and a transition to the next idea. `Journey.astro` renders the whole path as a continuous page. No quizzes or deeper disclosures interrupt the journey. The existing 22 concepts and their examples remain in Map, List, and individual lesson pages.
 
-Stage links use `#journey-<id>`; `?view=journey`, `?view=map`, and `?view=list` select views. With JavaScript disabled, the journey and lesson list remain readable. `npm run check` validates stage content and concept references.
+Stage links use `#journey-<id>`; `?view=journey`, `?view=map`, and `?view=list` select views. With JavaScript disabled, the journey and lesson list remain readable. `npm run check` validates stage content and example rows. This explains the mental progression; executable training exercises remain future work.
 
 ## Add a concept
 

@@ -40,8 +40,8 @@ Show one concept’s neighborhood at a time: before this, learn this, explore ne
 
 ## Journey view
 
-Lead with the whole five-stage path, then let the learner open one question at a time. Explain what and why before exposing mechanics. Keep supporting concepts and examples inline through native disclosures; full lesson pages remain optional. Opening a stage does not mark it complete. New visits start with Journey; explicit view URLs and existing concept links retain their intended destinations.
+Use a continuous beginner narrative: a need introduces an idea, a small example makes it concrete, and a transition motivates the next idea. Keep the ten-step overview linked to visible sections. Combine what and why in one explanation. No deeper sections or quizzes in this view; the concept library remains in Map and List. Start with characters, then distinguish token IDs, probability vectors, and learned embeddings. Opening or reading a section never implies completion.
 
 ## Explanatory typography
 
-Use larger monospace characters, token IDs, vectors, and numeric comparisons to make examples legible as diagrams. Pair every highlight with a label or explicit operation; color alone never carries meaning. Keep body text neutral and highlight selected terms consistently through `ConceptText.astro`. `JourneyExample.astro` supplies five static typographic examples. All examples remain readable without JavaScript and are explicitly illustrative rather than live model output.
+Use larger monospace characters, token IDs, vectors, and numeric comparisons to make examples legible as diagrams. Pair every highlight with a label or explicit operation; color alone never carries meaning. Keep body text neutral and highlight selected terms consistently through `ConceptText.astro`. `JourneyExample.astro` supplies labelled static typographic examples. All examples remain readable without JavaScript and are explicitly illustrative rather than live model output.

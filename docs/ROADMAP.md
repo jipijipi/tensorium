@@ -17,9 +17,9 @@
 
 ## Language-model journey — implemented
 
-- [x] Five-stage overview, before lesson details.
-- [x] What/why explanations with optional mechanics.
-- [x] Existing concepts and examples embedded in expandable sections.
+- [x] Ten-step overview linked to a continuous beginner narrative.
+- [x] Combined what/why explanations with one concrete example per step.
+- [x] Existing concepts and examples preserved in Map, List, and lesson pages.
 - [x] Journey tab before Map and List, with existing map URLs preserved.
 - [ ] Add executable character-tokenizer and bigram baseline exercises.
 - [ ] Extend the build toward a tiny causal transformer and generation loop.

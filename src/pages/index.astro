@@ -73,16 +73,6 @@ const categories = [...new Set(concepts.map(c => c.category))];
     }
   }));
   document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(button => button.addEventListener('click', () => update('view', button.dataset.view!)));
-  function openHashStage() {
-    const stage = [...document.querySelectorAll<HTMLDetailsElement>('[data-stage]')].find(s => `#${s.id}` === location.hash);
-    if (stage && !journey.hidden) stage.open = true;
-  }
-  document.querySelectorAll<HTMLAnchorElement>('[data-open-stage]').forEach(link => link.addEventListener('click', () => {
-    const stage = document.getElementById(`journey-${link.dataset.openStage}`) as HTMLDetailsElement;
-    stage.open = true;
-    stage.querySelector('summary')?.focus({ preventScroll: true });
-  }));
-  window.addEventListener('popstate', () => { restore(); openHashStage(); });
-  window.addEventListener('hashchange', openHashStage);
-  switcher.hidden = false; restore(); openHashStage();
+  window.addEventListener('popstate', restore);
+  switcher.hidden = false; restore();
 </script>

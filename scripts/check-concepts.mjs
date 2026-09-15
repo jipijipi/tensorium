@@ -19,9 +19,8 @@ console.log(`Validated ${concepts.length} concepts: complete content, valid refe
 const journey = JSON.parse(readFileSync(new URL('../src/data/journey.json', import.meta.url)));
 assert.equal(new Set(journey.map(s => s.id)).size, journey.length, 'Journey stage IDs must be unique');
 for (const stage of journey) {
-  for (const field of ['id', 'title', 'question', 'summary', 'what', 'why', 'build', 'how', 'checkpoint', 'answer', 'next', 'exampleTitle', 'caption']) assert(stage[field]?.trim(), `${stage.id}: missing ${field}`);
-  assert(stage.example.length > 0 && stage.example.every(line => line.trim()), `${stage.id}: missing example`);
-  assert(stage.concepts.length > 0, `${stage.id}: missing supporting concepts`);
-  for (const id of stage.concepts) assert(ids.has(id), `${stage.id}: unknown supporting concept ${id}`);
+  for (const field of ['id', 'title', 'tone', 'question', 'explanation', 'caption', 'next']) assert(stage[field]?.trim(), `${stage.id}: missing ${field}`);
+  assert(['predict', 'represent', 'learn', 'context', 'generate'].includes(stage.tone), `${stage.id}: unknown color role`);
+  assert(stage.example.length > 0 && stage.example.every(row => row.label?.trim() && row.value?.trim()), `${stage.id}: missing example`);
 }
-console.log(`Validated ${journey.length} journey stages and their concept references.`);
+console.log(`Validated ${journey.length} journey steps and their examples.`);

@@ -1,32 +1,7 @@
 ---
-interface Props { stage: string }
-const { stage } = Astro.props;
+interface Props { rows: { label: string; value: string }[] }
+const { rows } = Astro.props;
 ---
-<div class="type-example">
-  {stage === 'predict' && <>
-    <p class="visual-label">Text so far <span aria-hidden="true">→</span> possible next character</p>
-    <div class="token-expression"><span class="text-fragment">ca</span><span class="token-box" data-tone="predict">?</span></div>
-    <div class="candidate-words"><span>ca<strong data-tone="predict">t</strong></span><span>ca<strong data-tone="predict">r</strong></span><span>ca<strong data-tone="predict">n</strong></span></div>
-    <p class="visual-note">One prefix. Several possible continuations.</p>
-  </>}
-  {stage === 'represent' && <>
-    <div class="encoding-grid"><span class="visual-label">Character</span><span class="visual-label">Token ID</span><span class="visual-label">Vector lookup</span>
-      {['c','a','t'].map((char, i) => <><span class="token-character">{char}</span><span class="token-id" data-tone="represent">{i}</span><span class="vector-symbol" data-tone="represent">e<sub>{i}</sub></span></>)}
-    </div>
-    <p class="visual-note">Same symbol, different representations. Each e is a learned vector.</p>
-  </>}
-  {stage === 'learn' && <>
-    <div class="learning-comparison"><div><span class="visual-label">Probability of the observed token</span><strong data-tone="predict">0.20 <span class="math-arrow">→</span> 0.60</strong></div><div><span class="visual-label">Loss: −ln(probability)</span><strong data-tone="learn">1.61 <span class="math-arrow">→</span> 0.51</strong></div></div>
-    <p class="visual-note">Illustrative before/after: a higher probability for the observed token means a lower loss. Natural logarithm; values rounded.</p>
-    <div class="training-type-flow"><span>Predict</span><span aria-hidden="true">→</span><b data-tone="learn">Measure loss</b><span aria-hidden="true">→</span><span>Update weights</span></div>
-  </>}
-  {stage === 'context' && <>
-    <div class="context-window"><div><span class="visual-label">Available context</span><div class="context-tokens"><span class="token-box" data-tone="context">c</span><span class="token-box" data-tone="context">a</span><strong class="token-box current-token" data-tone="context">t</strong></div></div><div class="future-context"><span class="visual-label">Future · hidden</span><div class="context-tokens"><span class="token-box">…</span></div></div></div>
-    <p class="visual-note">At the current position <strong>t</strong>, attention may use c, a, and t. It cannot use future tokens.</p>
-  </>}
-  {stage === 'generate' && <>
-    <div class="generation-line"><span class="visual-label">Context</span><span class="text-fragment">ca</span><span class="math-arrow" aria-hidden="true">+</span><span class="token-box" data-tone="generate">t</span><span class="visual-label">Sampled token</span></div>
-    <div class="generation-result"><span class="visual-label">New context</span><span class="text-fragment">ca<strong data-tone="generate">t</strong></span><span class="math-arrow" aria-hidden="true">→</span><span>predict again</span></div>
-    <p class="visual-note">An illustrative sampled token. The context grows; the model’s weights stay fixed.</p>
-  </>}
-</div>
+<dl class="simple-example">
+  {rows.map(row => <div><dt>{row.label}</dt><dd>{row.value}</dd></div>)}
+</dl>
