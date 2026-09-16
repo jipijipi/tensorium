@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Journey from '../components/Journey.astro';
+import ModelLab from '../components/ModelLab.astro';
 import concepts from '../data/concepts.json';
 const categories = [...new Set(concepts.map(c => c.category))];
 ---
@@ -8,13 +9,14 @@ const categories = [...new Set(concepts.map(c => c.category))];
   <section class="hero atlas-hero">
     <p class="eyebrow">A visual atlas of machine learning</p>
     <h1>Understand the ideas.<br /><span class="muted">Build a language model.</span></h1>
-    <p class="lede">See the journey first. Explore the concepts when you need them.</p>
+    <p class="lede">Try a tiny model. Follow the journey. Explore the concepts when you need them.</p>
   </section>
   <section id="concepts" aria-labelledby="atlas-title">
     <div class="section-heading">
       <h2 id="atlas-title">The learning atlas <span class="count">{concepts.length} introductions</span></h2>
-      <div class="view-switch" hidden aria-label="Atlas view"><button type="button" data-view="journey" aria-pressed="true">Journey</button><button type="button" data-view="map" aria-pressed="false">Map</button><button type="button" data-view="list" aria-pressed="false">List</button></div>
+      <div class="view-switch" hidden aria-label="Atlas view"><button type="button" data-view="lab" aria-pressed="true">Lab</button><button type="button" data-view="journey" aria-pressed="false">Journey</button><button type="button" data-view="map" aria-pressed="false">Map</button><button type="button" data-view="list" aria-pressed="false">List</button></div>
     </div>
+    <ModelLab />
     <Journey />
     <div id="map-view" hidden>
       <p class="map-help">Choose a subject. Follow the connections from prerequisites to next steps.</p>
@@ -43,6 +45,7 @@ const categories = [...new Set(concepts.map(c => c.category))];
   </section>
 </BaseLayout>
 <script>
+  const lab = document.querySelector<HTMLElement>('#lab-view')!;
   const journey = document.querySelector<HTMLElement>('#journey-view')!;
   const map = document.querySelector<HTMLElement>('#map-view')!;
   const list = document.querySelector<HTMLElement>('#list-view')!;
@@ -53,9 +56,10 @@ const categories = [...new Set(concepts.map(c => c.category))];
     const params = new URLSearchParams(location.search);
     const selected = panels.find(p => p.dataset.panel === params.get('concept'))?.dataset.panel ?? 'vectors';
     const requested = params.get('view');
-    const view = requested && ['journey', 'map', 'list'].includes(requested) ? requested : params.has('concept') ? 'map' : 'journey';
+    const view = requested && ['lab', 'journey', 'map', 'list'].includes(requested) ? requested : params.has('concept') ? 'map' : 'lab';
     panels.forEach(p => p.hidden = p.dataset.panel !== selected);
     selectors.forEach(button => { if (button.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', String(button.dataset.select === selected)); });
+    lab.hidden = view !== 'lab';
     journey.hidden = view !== 'journey'; map.hidden = view !== 'map'; list.hidden = view !== 'list';
     document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
     document.querySelector('#selection-status')!.textContent = panels.find(p => !p.hidden)?.getAttribute('aria-label') ?? '';

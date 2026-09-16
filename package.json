@@ -12,10 +12,11 @@
     "check": "node scripts/check-concepts.mjs && astro check",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "node scripts/test-tiny-model.mjs"
+    "test": "node scripts/test-tiny-model.mjs && node scripts/test-browser-model.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
+    "@tensorflow/tfjs": "^4.22.0",
     "astro": "^7.3.2"
   },
   "devDependencies": {
