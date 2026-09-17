@@ -6,7 +6,7 @@ A mobile-first visual atlas of machine learning. Clear explanations, useful diag
 
 An early, working learning atlas with 22 introductory lessons across 16 subject groups.
 
-- A Journey / Map / List switch. Journey is the default for new visits; existing concept links still open the map.
+- A Lab / Journey / Map / List switch. Lab is the default for new visits; existing concept links still open the map.
 - A seven-step tiny-model journey: examples, boundaries, pair counts, probabilities, sampling, generation, and limitations.
 - A working cat/car/can experiment with editable frequencies, a live count table, token-by-token generation, and an explicit END marker.
 - Part Two continues from observed limitations: a live context-length experiment, unseen contexts, shared representations, and visual explanations of the neural prediction path.
@@ -18,7 +18,7 @@ An early, working learning atlas with 22 introductory lessons across 16 subject 
 - Short explanations, concrete examples, and self-checks; the original gradient descent lesson includes a static SVG diagram and Python example.
 - A fully usable lesson list without JavaScript.
 
-Connections represent suggested preparation for these introductions, not an exhaustive curriculum or formal proof that a topic is mastered. Interactive experiments, search, and offline access remain planned. See [the roadmap](docs/ROADMAP.md).
+Connections represent suggested preparation for these introductions, not an exhaustive curriculum or formal proof that a topic is mastered. More interactive experiments, search, and offline access remain planned. See [the roadmap](docs/ROADMAP.md).
 
 ## Run locally
 
@@ -85,7 +85,19 @@ public/                   Static assets
 
 `src/data/journey.json` defines the seven-step counting-model introduction. `src/components/TinyModel.astro` exposes the full training table and generation trace. `src/lib/tiny-model.ts` implements counting and sampling; `npm test` checks normalization, boundaries, stopping, and invalid input handling. Input counts are whole numbers from 0 to 100; an empty collection disables generation. Sampling uses browser randomness and does not promise exact proportions in small runs.
 
-The full first journey stays on the homepage. Part Two lives in `src/data/neural-journey.json` at `/journey/neural/`. It follows 11 problem-led steps and includes `ContextExperiment.astro`: real character counts from three explicitly introduced sentences, with 1/3/8-character memory and an unseen-context option. `NeuralVisual.astro` adds static diagrams for embedding lookup, weighted sums, probability comparisons, positions, attention mixtures, and the transformer block. Neural values are illustrative; there is no live neural training. The 22 concept lessons remain in Map and List. With JavaScript disabled, the lesson and initial count table remain readable.
+The full first journey stays on the homepage. Part Two lives in `src/data/neural-journey.json` at `/journey/neural/`. It follows 11 problem-led steps and includes `ContextExperiment.astro`: real character counts from three explicitly introduced sentences, with 1/3/8-character memory and an unseen-context option. `NeuralVisual.astro` adds static diagrams for embedding lookup, weighted sums, probability comparisons, positions, attention mixtures, and the transformer block. Neural values on the Journey are illustrative; the Lab runs real neural training. The 22 concept lessons remain in Map and List. With JavaScript disabled, the lesson and initial count table remain readable.
+
+## Browser model lab
+
+The homepage Lab trains a character language model from pasted text entirely in a dedicated browser worker. Click **Build my models**, **Train the transformer**, then pause and generate one character at a time or 80 at once. **Watch one update** exposes a real input/target passage, its correct-answer probability before and after, and one output bias with its gradient and update. A one-character count baseline uses the same training split. Live views show token IDs, raw next-character probabilities, learned embeddings, causal attention, and training/held-out loss.
+
+The neural model has one decoder block, one attention head, width 16, context 16, a 32-unit ReLU feed-forward layer, learned positions, residual connections, and non-affine layer normalization. It uses TensorFlow.js on the CPU, cross-entropy loss and Adam (learning rate 0.005, elementwise gradient clipping to ±1). The included 19-token example has 2,979 trainable parameters. Batch size is eight, with a 400-update cap per reset. Training yields after each update; leaving the Lab or hiding the page pauses it. Worker termination handles resets and text edits.
+
+Input accepts 160–50,000 Unicode code points and 2–128 distinct characters. IDs label characters, including spaces and newlines. The last 10% is held out before windows are sampled; no training window crosses that split. The loss chart evaluates eight fixed passages per split every ten updates. The repeated sample is deliberately easy and is not evidence of generalization. Generation uses at most the previous 16 characters, rejects unknown prompt characters, and stops by length (there is no END token in this continuous-text model). Temperature changes sampling probabilities only. The count baseline falls back to training-character frequencies if no successor was observed.
+
+All model values shown in the Lab come from the current model. Attention is a mixing weight, not a complete explanation. Training and generation are mutually exclusive. This experiment is a tiny neural language model, not a pretrained LLM or instruction-following assistant. Text and weights stay in tab memory; they are not uploaded or saved. The packaged worker and numerical library load from the site's own origin only when a model is built.
+
+Implementation: `src/components/ModelLab.astro` (layout), `src/lib/lab-client.ts` (interaction), `src/workers/lab.worker.ts` (scheduling), and `src/lib/browser-model.ts` (model). `npm test` checks numerical gradients, causal masking, learning, Unicode, sampling, and tensor cleanup in addition to the existing counting experiments.
 
 ## Add a concept
 

@@ -51,3 +51,13 @@ The [concept-by-concept assessment](VISUALIZATION-PLAN.md) covers static illustr
 Potential topics include vectors, matrix multiplication, probability, activation functions, regularization, convolution, attention, and transformers. Add concepts when there is a clear visual teaching approach, rather than targeting a page count.
 
 Consider static search as the atlas grows. Offline support, quizzes, embeddings, and 3D experiments are optional future work. Accounts and a backend are outside the current scope; local bookmarks and progress would not inherently require either.
+
+## Local model lab — implemented
+
+- [x] Lab tab before Journey, preserving Map and List.
+- [x] Pasted-text character model with an observed-pair baseline and a trainable one-block transformer.
+- [x] Local CPU worker, train/pause/reset, individual updates, bounded generation and temperature.
+- [x] Actual token IDs, embedding lookups, causal attention, predicted chances, and a training update inspection.
+- [x] Separate training/held-out loss, numerical-gradient and causal-mask tests, memory-cleanup checks.
+- [ ] Measure representative physical-phone performance before increasing model/input limits.
+- [ ] Optional explicit export/import and offline asset caching.

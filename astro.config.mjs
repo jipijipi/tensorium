@@ -6,4 +6,5 @@ export default defineConfig({
   output: 'static',
   integrations: [mdx()],
   devToolbar: { enabled: false },
+  vite: { optimizeDeps: { include: ['@tensorflow/tfjs'] } },
 });

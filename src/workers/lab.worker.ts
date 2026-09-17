@@ -31,6 +31,9 @@ self.onmessage = async ({ data }) => {
       metrics();
     } else if (model && data.type === 'train' && !running && model.step < MAX_STEPS) {
       running = true; tick();
+    } else if (model && data.type === 'step' && !running && model.step < MAX_STEPS) {
+      model.train(corpus.train, true); metrics();
+      emit('update', { ...model.lastUpdate, step: model.step });
     } else if (data.type === 'pause') {
       running = false; clearTimeout(timer); emit('paused', { step: model?.step ?? 0 });
     } else if (model && data.type === 'predict') {

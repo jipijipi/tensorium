@@ -728,3 +728,5 @@ summary { cursor: pointer; min-height: 48px; align-content: center; color: var(-
 .model-lab details { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 16px 0; margin: 24px 0; font-size: 13px; }.model-lab summary { cursor: pointer; }
 .lab-purple { color: #7043a0; }.lab-blue { color: #285ca1; }.lab-teal { color: #17696b; }.lab-orange { color: #9a4b19; }
 @media(max-width:600px) { .lab-columns { grid-template-columns: 1fr; gap: 8px; }.lab-actions > span { width: 100%; margin: 0; }.lab-route { gap: 10px; }.lab-route > span { display: none; }.lab-section { padding: 28px 0; }.lab-intro h2 { letter-spacing: -1px; }.lab-settings { gap: 20px; }.lab-output { font-size: 17px; }.section-heading { flex-wrap: wrap; }.view-switch { flex-wrap: wrap; } }
+.lab-pairs-table td { min-width: 28px; font-size: 15px; background: #f2ecf8; color: #7043a0; }
+.lab-pairs-table tr:last-child td { background: #ebf3e7; color: #35682c; }

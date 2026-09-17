@@ -56,6 +56,12 @@ const after = model.evaluate(data.train);
 assert(after < before * .7, `Training must improve the simple corpus: ${before} → ${after}`);
 assert.notDeepEqual(model.inspect(ids).embeddings[0], initialEmbedding);
 assert(Number.isFinite(model.evaluate(data.validation)));
+model.train(data.train, true);
+assert.equal(model.lastUpdate.inputs.length, 16);
+assert.deepEqual(model.lastUpdate.inputs.slice(1), model.lastUpdate.targets.slice(0, -1));
+assert([model.lastUpdate.before, model.lastUpdate.after].every(n => n >= 0 && n <= 1));
+assert(Number.isFinite(model.lastUpdate.gradient));
+assert.notEqual(model.lastUpdate.weightBefore, model.lastUpdate.weightAfter);
 const tensors = tf.memory().numTensors;
 for (let i = 0; i < 10; i++) { model.train(data.train); model.inspect(ids); model.evaluate(data.validation); }
 assert.equal(tf.memory().numTensors, tensors, 'Repeated training/inference must not leak tensors');

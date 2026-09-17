@@ -23,8 +23,15 @@
       <div><h4 class="lab-purple">Learn a shared recipe.</h4><p>The transformer sees up to <strong>16 characters</strong>. Its <strong>weights</strong> are adjustable numbers in a calculation. It guesses, checks the actual next character in your text, and adjusts those numbers to make that answer more likely.</p><p class="lab-note" id="lab-model-summary">One attention head · one transformer block · 16 numbers per character</p></div>
     </div>
     <div class="lab-training-loop"><span>Read a short passage</span><b>→</b><span>Guess each next character</span><b>→</b><span>Measure the mistake</span><b>→</b><span>Adjust the weights</span><b>↻</b></div>
-    <div class="lab-actions"><button id="lab-train" class="lab-primary" type="button" disabled>Train the transformer</button><button id="lab-pause" type="button" disabled>Pause</button><button id="lab-reset" type="button" disabled>Reset learning</button><span id="lab-step">0 / 400 updates</span></div>
+    <div class="lab-actions"><button id="lab-single" type="button" disabled>Watch one update</button><button id="lab-train" class="lab-primary" type="button" disabled>Train the transformer</button><button id="lab-pause" type="button" disabled>Pause</button><button id="lab-reset" type="button" disabled>Reset learning</button><span id="lab-step">0 / 400 updates</span></div>
     <p id="lab-status" role="status" aria-live="polite">Start with the example, or paste your own text. Then build the models.</p>
+    <div id="lab-update" hidden>
+      <h4>Practice means hiding the next character.</h4>
+      <p>One passage from this update is below. At each position, the model sees only characters up to that point; the next character is the answer. Training checks all 16 positions in eight passages at once.</p>
+      <div id="lab-training-pairs" class="lab-scroll"></div>
+      <p id="lab-update-chance"></p>
+      <details><summary>See one adjustable number change</summary><p id="lab-update-weight"></p><p class="lab-note">This is the output bias for that character: an adjustable number added to its score. The gradient measures how the whole batch’s loss responds to this number. Adam combines gradients with its running history to choose an update; this is not simply “subtract the gradient.” All model weights are updated together. One step need not improve every individual guess.</p></details>
+    </div>
     <div class="lab-loss" hidden>
       <div class="lab-loss-key"><span class="lab-orange">● Training mistake <b id="lab-train-loss">—</b></span><span class="lab-teal">● Held-out mistake <b id="lab-val-loss">—</b></span></div>
       <svg id="lab-loss-chart" viewBox="0 0 700 130" role="img" aria-label="Loss during training. Lower means better predictions on the measured passages."></svg>
@@ -38,6 +45,7 @@
     <div class="lab-settings"><label for="lab-model">Generate with<select id="lab-model"><option value="neural">Tiny transformer</option><option value="count">Counting model</option></select></label><label for="lab-temperature">Randomness <output id="lab-temperature-value">1.0</output><input id="lab-temperature" type="range" min="0.2" max="2" step="0.1" value="1" /></label></div>
     <p class="lab-note">Lower randomness favors the strongest guesses; higher randomness spreads the chances. It changes sampling, not learning.</p>
     <div class="lab-actions"><button id="lab-inspect" type="button" disabled>Show next guess</button><button id="lab-next" type="button" disabled>Add one character</button><button id="lab-generate" class="lab-primary" type="button" disabled>Generate 80 characters</button><button id="lab-stop" type="button" disabled>Stop</button><button id="lab-clear" type="button" disabled>Back to starting text</button></div>
+    <p id="lab-generation-feedback" class="lab-note" role="status"></p>
     <div class="lab-output" aria-label="Generated text"><span id="lab-seed">the ca</span><mark id="lab-generated"></mark><span class="lab-caret" aria-hidden="true">▎</span></div>
     <p class="lab-note" id="lab-generation-note">This treats the text as a continuous stream, with no special end token. Generation stops at the requested length. Training and generation run separately so you can inspect a stable model.</p>
     <div id="lab-prediction" hidden>

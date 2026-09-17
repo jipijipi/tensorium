@@ -1,6 +1,6 @@
 # A local language-model lab
 
-Feasibility assessment, 2026-09-16. Proposed work, not an implemented feature. No browser-training performance benchmark has been run for this assessment.
+Feasibility assessment, 2026-09-16. The initial Lab is now implemented; the proposal below records the original design options. See README for the shipped architecture (width 16, one head, context 16, CPU worker, 400-update cap), rather than the larger candidate discussed here. Desktop browser training and generation have been verified; representative physical-phone performance remains unmeasured.
 
 ## Recommendation
 

@@ -21,6 +21,7 @@ function controls() {
   const generating = remaining > 0;
   for (const id of ['inspect', 'next', 'generate', 'clear']) get<HTMLButtonElement>(id).disabled = !ready || training || busy || generating;
   get<HTMLButtonElement>('train').disabled = !ready || training || busy || generating || steps >= 400;
+  get<HTMLButtonElement>('single').disabled = get<HTMLButtonElement>('train').disabled;
   get<HTMLButtonElement>('pause').disabled = !training;
   get<HTMLButtonElement>('stop').disabled = !generating;
   get<HTMLButtonElement>('reset').disabled = !ready;
@@ -38,7 +39,9 @@ function reset() {
   worker?.terminate(); worker = undefined; ready = training = busy = false; stop(); steps = 0; metrics = [];
   get('tokens').replaceChildren(); get('data-summary').textContent = ''; get('model-summary').textContent = 'One attention head · one transformer block · 16 numbers per character';
   document.querySelector<HTMLElement>('.lab-loss')!.hidden = true;
+  get('update').hidden = true;
   generated = ''; output(); clearSnapshot(); controls();
+  get('generation-feedback').textContent = '';
 }
 function build() {
   reset();
@@ -65,6 +68,17 @@ function build() {
     } else if (data.type === 'metrics') {
       steps = data.step; metrics.push(data); chart(); controls();
       if (training) status.textContent = `Learning from short passages… ${steps} weight updates completed.`;
+    } else if (data.type === 'update') {
+      busy = false; steps = data.step; controls(); get('update').hidden = false;
+      const table = document.createElement('table'); table.className = 'lab-pairs-table';
+      for (const [name, ids] of [['Input', data.inputs], ['Answer', data.targets]] as [string, number[]][]) {
+        const row = table.insertRow(), th = document.createElement('th'); th.scope = 'row'; th.textContent = name; row.append(th);
+        ids.forEach(id => { row.insertCell().textContent = label(vocab[id]); });
+      }
+      get('training-pairs').replaceChildren(table);
+      get('update-chance').textContent = `For the final position, the correct next character was ${JSON.stringify(vocab[data.targets.at(-1)])}. Its chance changed from ${(data.before * 100).toFixed(2)}% → ${(data.after * 100).toFixed(2)}% in this update.`;
+      get('update-weight').textContent = `Before: ${data.weightBefore.toFixed(5)} → batch gradient: ${data.gradient.toFixed(5)} → after: ${data.weightAfter.toFixed(5)}.`;
+      status.textContent = `Update ${steps} complete. See the real example and changes below.`;
     } else if (data.type === 'paused') {
       training = false; steps = data.step; controls();
       status.textContent = steps >= 400 ? 'Training limit reached. Try generating, or reset to start again.' : 'Training paused. Try the model, or continue learning.';
@@ -79,13 +93,16 @@ function build() {
       }
       controls();
     } else if (data.type === 'error') {
+      if (!ready) reset();
       training = busy = false; stop(); controls(); status.textContent = data.message;
+      get('generation-feedback').textContent = data.message;
     }
   };
   worker.postMessage({ type: 'init', text: corpus.value }); controls();
 }
 function predict(append: boolean) {
   if (!ready || training || busy) return;
+  get('generation-feedback').textContent = '';
   cancelled = false; busy = true; controls();
   worker!.postMessage({ type: 'predict', prompt: prompt.value + generated, model: get<HTMLSelectElement>('model').value,
     temperature: Number(get<HTMLInputElement>('temperature').value), append });
@@ -145,7 +162,8 @@ get('reset').onclick = build;
 get('example').onclick = () => { reset(); corpus.value = example; prompt.value = 'the ca'; size(); output(); status.textContent = 'Example loaded. Build the models to start.'; };
 corpus.oninput = () => { reset(); size(); status.textContent = 'Text changed. Build the models again to use it.'; };
 prompt.oninput = () => { generated = ''; output(); clearSnapshot(); };
-get('train').onclick = () => { training = true; clearSnapshot(); worker?.postMessage({ type: 'train' }); status.textContent = 'Training locally…'; controls(); };
+get('single').onclick = () => { busy = true; clearSnapshot(); worker?.postMessage({ type: 'step' }); controls(); };
+get('train').onclick = () => { training = true; get('update').hidden = true; clearSnapshot(); worker?.postMessage({ type: 'train' }); status.textContent = 'Training locally…'; controls(); };
 function pause() { if (training) worker?.postMessage({ type: 'pause' }); }
 get('pause').onclick = pause;
 get('inspect').onclick = () => predict(false);

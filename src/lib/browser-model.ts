@@ -53,6 +53,7 @@ export class BrowserModel {
   optimizer = tf.train.adam(.005);
   step = 0;
   size: number;
+  lastUpdate?: { inputs: number[]; targets: number[]; before: number; after: number; weightBefore: number; gradient: number; weightAfter: number };
   constructor(size: number) {
     this.size = size;
     const shapes = [[size, WIDTH], [CONTEXT, WIDTH], [WIDTH, WIDTH], [WIDTH, WIDTH],
@@ -95,14 +96,22 @@ export class BrowserModel {
     return { inputs: tf.tensor2d(starts.map(s => data.slice(s, s + length)), [batch, length], 'int32'),
       targets: tf.tensor2d(starts.map(s => data.slice(s + 1, s + length + 1)), [batch, length], 'int32') };
   }
-  train(data: number[]) {
+  train(data: number[], capture = false) {
     return tf.tidy(() => {
       const { inputs, targets } = this.batch(data);
+      const inputRow = capture ? inputs.arraySync()[0] : [];
+      const targetRow = capture ? targets.arraySync()[0] : [];
+      const target = targetRow.at(-1)!;
+      const before = capture ? this.inspect(inputRow).probabilities[target] : 0;
+      const weightBefore = capture ? this.weights[11].dataSync()[target] : 0;
       const { value, grads } = tf.variableGrads(() => this.loss(inputs, targets), this.weights);
+      const gradient = capture ? grads[this.weights[11].name].dataSync()[target] : 0;
       const clipped: tf.NamedTensorMap = {};
       for (const [name, grad] of Object.entries(grads)) clipped[name] = grad.clipByValue(-1, 1);
       this.optimizer.applyGradients(Object.entries(clipped).map(([name, tensor]) => ({ name, tensor })));
       this.step++;
+      if (capture) this.lastUpdate = { inputs: inputRow, targets: targetRow, before,
+        after: this.inspect(inputRow).probabilities[target], weightBefore, gradient, weightAfter: this.weights[11].dataSync()[target] };
       return value.dataSync()[0];
     });
   }
